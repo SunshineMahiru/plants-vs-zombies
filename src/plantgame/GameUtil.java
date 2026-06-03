@@ -1,5 +1,7 @@
 package plantgame;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -7,24 +9,19 @@ import java.io.InputStream;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import org.w3c.dom.NodeList;
  
-public class GameUtil {//GameUtil类：加载图片代码
-    // 工具类最好将构造器私有化。
+public class GameUtil {
      GameUtil() {
-     
     }
     
-    /*
-	 * 判断一个坐标是否在四个顶点组成的矩形内
-	 * 逆时针从左上角给出四个顶点的坐标   x1,x2,x3,x4不可重复
-	 * x2<x1   x3<x4
-	 */
      static boolean ifRect(int x,int y,int x1,int y1,int x2,int y2,int x3,int y3,int x4,int y4) {
 		if((y>=(((y2-y1)*(x-x1))/(x2-x1)+y1))&&(y<=(((y3-y2)*(x-x2))/(x3-x2)+y2))&&(y<=(((y4-y3)*(x-x3))/(x4-x3)+y3))&&(y>=(((y4-y1)*(x-x1))/(x4-x1)+y1))) {
 			return true;
@@ -40,9 +37,6 @@ public class GameUtil {//GameUtil类：加载图片代码
 		}
 	}
     
-    /*
-     * 返回指定路径的图片对象
-     */
     static Image getImage(String path) {
         BufferedImage bi = null;
         try {
@@ -54,29 +48,100 @@ public class GameUtil {//GameUtil类：加载图片代码
         return bi;
     }
 
+    static Image getGifImage(String path) {
+        URL u = GameUtil.class.getClassLoader().getResource(path);
+        if(u==null) {
+            System.err.println("Resource not found: "+path);
+            return null;
+        }
+        return new javax.swing.ImageIcon(u).getImage();
+    }
+
     static Image[] getGifFrames(String path) {
         try {
             URL u = GameUtil.class.getClassLoader().getResource(path);
+            if(u==null) {
+                System.err.println("Resource not found: "+path);
+                return new Image[1];
+            }
             ImageInputStream iis = ImageIO.createImageInputStream(u.openStream());
             ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
             reader.setInput(iis);
+            
             int numFrames = reader.getNumImages(true);
-            Image[] frames = new Image[numFrames];
-            for (int i = 0; i < numFrames; i++) {
-                frames[i] = reader.read(i);
+            if(numFrames<=0) return new Image[1];
+            
+            int width = reader.getWidth(0);
+            int height = reader.getHeight(0);
+            
+            BufferedImage[] frames = new BufferedImage[numFrames];
+            BufferedImage canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage savedCanvas = null;
+            
+            for(int i=0; i<numFrames; i++) {
+                IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(i)
+                    .getAsTree("javax_imageio_gif_image_1.0");
+                
+                int offsetX=0, offsetY=0;
+                int disposal=1;
+                
+                NodeList imgDescs = root.getElementsByTagName("ImageDescriptor");
+                if(imgDescs.getLength()>0) {
+                    IIOMetadataNode imgDesc = (IIOMetadataNode)imgDescs.item(0);
+                    offsetX = Integer.parseInt(imgDesc.getAttribute("imageLeftPosition"));
+                    offsetY = Integer.parseInt(imgDesc.getAttribute("imageTopPosition"));
+                }
+                
+                NodeList gces = root.getElementsByTagName("GraphicControlExtension");
+                if(gces.getLength()>0) {
+                    IIOMetadataNode gce = (IIOMetadataNode)gces.item(0);
+                    String dispStr = gce.getAttribute("disposalMethod");
+                    if("restoreToBackgroundColor".equals(dispStr)) {
+                        disposal = 2;
+                    } else if("restoreToPrevious".equals(dispStr)) {
+                        disposal = 3;
+                    } else {
+                        disposal = 1;
+                    }
+                }
+                
+                if(disposal==3) {
+                    savedCanvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D sg = savedCanvas.createGraphics();
+                    sg.drawImage(canvas, 0, 0, null);
+                    sg.dispose();
+                }
+                
+                BufferedImage frame = reader.read(i);
+                Graphics2D cg = canvas.createGraphics();
+                cg.drawImage(frame, offsetX, offsetY, null);
+                cg.dispose();
+                
+                frames[i] = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D fg = frames[i].createGraphics();
+                fg.drawImage(canvas, 0, 0, null);
+                fg.dispose();
+                
+                if(disposal==2) {
+                    Graphics2D dg = canvas.createGraphics();
+                    dg.setComposite(AlphaComposite.Clear);
+                    dg.fillRect(offsetX, offsetY, frame.getWidth(), frame.getHeight());
+                    dg.dispose();
+                } else if(disposal==3 && savedCanvas!=null) {
+                    canvas = savedCanvas;
+                    savedCanvas = null;
+                }
             }
+            
             reader.dispose();
             iis.close();
             return frames;
-        } catch (IOException e) {
+        } catch(Exception e) {
             e.printStackTrace();
             return new Image[1];
         }
     }
 
-    /*
-     * 音乐播放方法
-     */
      Clip bgm;
     public  void loadBGM(String path) {
     	try {

@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * SurvivalFrame½çÃæ
+ * SurvivalFrameç•Œé¢
  */
 public class SurvivalFrame  {
 	
@@ -14,7 +14,7 @@ public class SurvivalFrame  {
 	 static boolean live;
 	 static GameUtil util;
 	 static Image img[];
-	 //³õÊ¼»¯ÊôĞÔ
+	 //åˆå§‹åŒ–å±æ€§
 	static {
 		 x=0;
 		 y=30;
@@ -27,19 +27,19 @@ public class SurvivalFrame  {
 			 img[i]=GameUtil.getImage("SurvivalFrame/survival"+i+".png");
 			 }
 		 }
-	//»æÖÆ»­Ãæ·½·¨
+	//ç»˜åˆ¶ç”»é¢æ–¹æ³•
 	public static void draw(Graphics g) {
 		g.drawImage(img[op],x,y,null);
 	}
-	//Êó±êÒÆ¶¯ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseMove(MouseEvent e){
-		if(GameUtil.ifRect(e.getX(),e.getY(),29,603,133,620)) {//·µ»ØÖ÷²Ëµ¥
+		if(GameUtil.ifRect(e.getX(),e.getY(),29,603,133,620)) {//è¿”å›ä¸»èœå•
 		op=1;
 		}else {op=0;}
 	}
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseClick(MouseEvent e){
-		if(GameUtil.ifRect(e.getX(),e.getY(),29,603,133,620)) {//·µ»ØÖ÷²Ëµ¥
+		if(GameUtil.ifRect(e.getX(),e.getY(),29,603,133,620)) {//è¿”å›ä¸»èœå•
 			live=false;MenuFrame.live=true;util.playBGM("sounds/bgm0.wav",1);op=0;
 			LoadFrame.util.playBGM();TuJianFrame.util.stopBGM();
 		}

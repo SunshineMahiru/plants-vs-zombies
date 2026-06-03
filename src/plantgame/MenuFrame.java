@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * Ö÷²Ëµ¥½çÃæ
+ * ä¸»èœå•ç•Œé¢
  */
 public class MenuFrame {
 	
@@ -27,21 +27,21 @@ public class MenuFrame {
 			 img[i]=GameUtil.getImage("MenuFrame/menu ("+(i+1)+").png");
 			 }
 		 }
-	//Êó±êÒÆ¶¯ÊÂ¼ş´¦Àí
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†
 	public static void MouseMove(MouseEvent e){
-		if(GameUtil.ifRect(e.getX(),e.getY(),46,507,143,570)) {//³É¾Í
+		if(GameUtil.ifRect(e.getX(),e.getY(),46,507,143,570)) {//æˆå°±
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=1;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),269,519,323,562)){//»¨Ô°
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),269,519,323,562)){//èŠ±å›­
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=2;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),408,461,461,555)){//Í¼¼ø
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),408,461,461,555)){//å›¾é‰´
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=3;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),521,566,601,622)){//ÉÌµê
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),521,566,601,622)){//å•†åº—
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=4;
@@ -57,42 +57,42 @@ public class MenuFrame {
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=7;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),659,502,696,520)){//help×ó²àµÄ»¨
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),659,502,696,520)){//helpå·¦ä¾§çš„èŠ±
 			
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),710,475,742,501)){//helpÓÒ²àµÄ»¨
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),710,475,742,501)){//helpå³ä¾§çš„èŠ±
 			
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),760,508,791,533)){//QuitÉÏµÄ»¨
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),760,508,791,533)){//Quitä¸Šçš„èŠ±
 			
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),460,180,459,233,740,277,752,211)){//¿ªÊ¼Ã°ÏÕ
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),460,180,459,233,740,277,752,211)){//å¼€å§‹å†’é™©
 			if(MenuFrame.loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=8;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),461,248,460,313,719,360,737,298)){//miniÄ£Ê½
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),461,248,460,313,719,360,737,298)){//miniæ¨¡å¼
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=9;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),463,327,462,371,693,424,705,375)){//puzzleÄ£Ê½
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),463,327,462,371,693,424,705,375)){//puzzleæ¨¡å¼
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=10;
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),465,390,464,434,678,490,690,444)){//survivalÄ£Ê½
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),465,390,464,434,678,490,690,444)){//survivalæ¨¡å¼
 			if(loadtime==0) {
 				util.playBGM("sounds/bgm4.wav",1);loadtime++;
 			}op=11;
 		}else {loadtime=0;op=0;}
 	}
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†
 	public static void MouseClick(MouseEvent e) {
-		if(GameUtil.ifRect(e.getX(),e.getY(),46,507,143,570)) {//³É¾Í
+		if(GameUtil.ifRect(e.getX(),e.getY(),46,507,143,570)) {//æˆå°±
 			live=false;AchieveFrame.live=true;loadtime=0;op=0;
 			util.playBGM("sounds/bgm0.wav",1);
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),269,519,323,562)){//»¨Ô°
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),269,519,323,562)){//èŠ±å›­
 			live=false;GardenFrame.live=true;loadtime=0;op=0;
 			util.playBGM("sounds/bgm0.wav",1);LoadFrame.util.stopBGM();GardenFrame.util.playBGM();
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),408,461,461,555)){//Í¼¼ø
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),408,461,461,555)){//å›¾é‰´
 			MenuFrame.live=false;TuJianFrame.live=true;loadtime=0;op=0;
 			util.playBGM("sounds/bgm0.wav",1);LoadFrame.util.stopBGM();TuJianFrame.util.playBGM();
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),521,566,601,622)){//ÉÌµê
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),521,566,601,622)){//å•†åº—
 			live=false;ShopFrame.live=true;loadtime=0;op=0;
 			util.playBGM("sounds/bgm0.wav",1);
 		}/*else if(ifRect(e.getX(),e.getY(),599,537,667,555)){//option
@@ -102,22 +102,22 @@ public class MenuFrame {
 			LoadFrame.util.stopBGM();util.playBGM("sounds/bgm0.0.wav",1);
 		}else if(GameUtil.ifRect(e.getX(),e.getY(),734,552,785,570)){//Quit
 			System.exit(0);
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),659,502,696,520)){//help×ó²àµÄ»¨
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),659,502,696,520)){//helpå·¦ä¾§çš„èŠ±
 			op=20;util.playBGM("sounds/bgm0.wav",1);
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),710,475,742,501)){//helpÓÒ²àµÄ»¨
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),710,475,742,501)){//helpå³ä¾§çš„èŠ±
 			op=21;util.playBGM("sounds/bgm0.wav",1);
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),760,508,791,533)){//QuitÉÏµÄ»¨
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),760,508,791,533)){//Quitä¸Šçš„èŠ±
 			op=22;util.playBGM("sounds/bgm0.wav",1);
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),460,180,459,233,740,277,752,211)){//¿ªÊ¼Ã°ÏÕ
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),460,180,459,233,740,277,752,211)){//å¼€å§‹å†’é™©
 			MenuFrame.live=false;GameFrame.live=true;loadtime=0;op=0;LoadFrame.util.stopBGM();
 			GameFrame.util.playBGM();util.playBGM("sounds/bgm7.wav", 1);
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),461,248,460,313,719,360,737,298)){//miniÄ£Ê½
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),461,248,460,313,719,360,737,298)){//miniæ¨¡å¼
 			MenuFrame.live=false;MiniFrame.live=true;loadtime=0;op=0;util.playBGM("sounds/bgm0.wav",1);
 			LoadFrame.util.stopBGM();TuJianFrame.util.playBGM();
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),463,327,462,371,693,424,705,375)){//puzzleÄ£Ê½
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),463,327,462,371,693,424,705,375)){//puzzleæ¨¡å¼
 			MenuFrame.live=false;PuzzleFrame.live=true;op=0;util.playBGM("sounds/bgm0.wav",1);
 			LoadFrame.util.stopBGM();TuJianFrame.util.playBGM();
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),465,390,464,434,678,490,690,444)){//survivalÄ£Ê½
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),465,390,464,434,678,490,690,444)){//survivalæ¨¡å¼
 			MenuFrame.live=false;SurvivalFrame.live=true;op=0;util.playBGM("sounds/bgm0.wav",1);
 			LoadFrame.util.stopBGM();TuJianFrame.util.playBGM();
 		}

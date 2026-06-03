@@ -8,7 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class Enter extends Frame{
-	//Ò»Ö±ÖØ»­µÄÏß³Ì
+	//ä¸€ç›´é‡ç”»çš„çº¿ç¨‹
 	class HelpRepaint extends Thread{
 		@Override
 		public void run() {
@@ -24,60 +24,60 @@ public class Enter extends Frame{
 		
 	}
 	/*
-	 * main·½·¨
+	 * mainæ–¹æ³•
 	 */
 	private static final long serialVersionUID = 1L;
 	public static void main(String[] args) {
-		new LoadFrame();/*ÌáÇ°ÔØÈëLoadFrameÀà£¬·ÀÖ¹»­Ãæ²»Ò»ÖÂ*/
+		new LoadFrame();/*æå‰è½½å…¥LoadFrameç±»ï¼Œé˜²æ­¢ç”»é¢ä¸ä¸€è‡´*/
 		new GameFrame();
 		new Enter();
 	}
-	//¹¹Ôì·½·¨
+	//æ„é€ æ–¹æ³•
 	public Enter() {
-		Image ico=GameUtil.getImage(("LoadFrame/ico.png"));/*Ö²Îï´óÕ½½©Ê¬Í¼±ê*/
-		this.setTitle("Ö²ÎïVS½©Ê¬");
-		this.setIconImage(ico);   /*ÉèÖÃ´°¿ÚµÄlogo*/
-		this.setSize(800,632);/*³¡¾°µÄ³¤ºÍ¿í*/
+		Image ico=GameUtil.getImage(("LoadFrame/ico.png"));/*æ¤ç‰©å¤§æˆ˜åƒµå°¸å›¾æ ‡*/
+		this.setTitle("æ¤ç‰©VSåƒµå°¸");
+		this.setIconImage(ico);   /*è®¾ç½®çª—å£çš„logo*/
+		this.setSize(800,632);/*åœºæ™¯çš„é•¿å’Œå®½*/
 		this.setLocation(300,100);
 		this.setVisible(true);
 		this.setResizable(false);
 		LoadFrame.live=true;
 		LoadFrame.util.playBGM();
-		//ĞÂ½¨Ïß³Ì
+		//æ–°å»ºçº¿ç¨‹
 		HelpRepaint help=new HelpRepaint();
 		help.start();
-		//ÄÚ²¿ÀàÍê³É¡Á¹Ø±Õ¹¦ÄÜ
+		//å†…éƒ¨ç±»å®ŒæˆÃ—å…³é—­åŠŸèƒ½
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
-		//ÄÚ²¿Àà¼àÌıÊó±êµã»÷ÊÂ¼ş
+		//å†…éƒ¨ç±»ç›‘å¬é¼ æ ‡ç‚¹å‡»äº‹ä»¶
 		this.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(LoadFrame.live) {//¼ÓÔØ½çÃæµ¥»÷ÊÂ¼ş
+				if(LoadFrame.live) {//åŠ è½½ç•Œé¢å•å‡»äº‹ä»¶
 					LoadFrame.MouseClick(e);
-				}else if(MenuFrame.live) {//Ö÷²Ëµ¥µÄµã»÷ÊÂ¼ş
+				}else if(MenuFrame.live) {//ä¸»èœå•çš„ç‚¹å‡»äº‹ä»¶
 					MenuFrame.MouseClick(e);
-				}else if(AchieveFrame.live) {//³É¾ÍÏµÍ³µÄµã»÷ÊÂ¼ş
+				}else if(AchieveFrame.live) {//æˆå°±ç³»ç»Ÿçš„ç‚¹å‡»äº‹ä»¶
 					AchieveFrame.MouseClick(e);
-				}else if(GardenFrame.live) {//»¨Ô°µÄµã»÷ÊÂ¼ş
+				}else if(GardenFrame.live) {//èŠ±å›­çš„ç‚¹å‡»äº‹ä»¶
 					GardenFrame.MouseClick(e);
-				}else if(TuJianFrame.live) {//Í¼¼øµÄµã»÷ÊÂ¼ş
+				}else if(TuJianFrame.live) {//å›¾é‰´çš„ç‚¹å‡»äº‹ä»¶
 					TuJianFrame.MouseClick(e);
-				}else if(ShopFrame.live) {//ÉÌµêµÄµã»÷ÊÂ¼ş
+				}else if(ShopFrame.live) {//å•†åº—çš„ç‚¹å‡»äº‹ä»¶
 					ShopFrame.MouseClick(e);
-				}else if(HelpFrame.live) {//HelpµÄµã»÷ÊÂ¼ş
+				}else if(HelpFrame.live) {//Helpçš„ç‚¹å‡»äº‹ä»¶
 					HelpFrame.MouseClick(e);
-				}else if(MiniFrame.live) {//MiniµÄµã»÷ÊÂ¼ş
+				}else if(MiniFrame.live) {//Miniçš„ç‚¹å‡»äº‹ä»¶
 					MiniFrame.MouseClick(e);
-				}else if(PuzzleFrame.live) {//PuzzleµÄµã»÷ÊÂ¼ş
+				}else if(PuzzleFrame.live) {//Puzzleçš„ç‚¹å‡»äº‹ä»¶
 					PuzzleFrame.MouseClick(e);
-				}else if(SurvivalFrame.live) {//SurvivalµÄµã»÷ÊÂ¼ş
+				}else if(SurvivalFrame.live) {//Survivalçš„ç‚¹å‡»äº‹ä»¶
 					SurvivalFrame.MouseClick(e);
-				}else if(GameFrame.live) {//GameFrameµÄµã»÷ÊÂ¼ş
+				}else if(GameFrame.live) {//GameFrameçš„ç‚¹å‡»äº‹ä»¶
 					GameFrame.MouseClick(e);
 				}
 				
@@ -88,31 +88,40 @@ public class Enter extends Frame{
 				
 			}
 		});
-		//ÄÚ²¿Àà¼àÌıÊóÒÆ¶¯»÷ÊÂ¼ş
+		//å³é”®å–æ¶ˆé€‰æ‹©æ¤ç‰©
+		this.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if(e.getButton()==MouseEvent.BUTTON3 && GameFrame.live) {
+					GameFrame.cancelSelect();
+				}
+			}
+		});
+		//å†…éƒ¨ç±»ç›‘å¬é¼ ç§»åŠ¨å‡»äº‹ä»¶
 		this.addMouseMotionListener(new MouseAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				if(LoadFrame.live) {//¼ÓÔØ½çÃæµÄÒÆ¶¯ÊÂ¼ş
+				if(LoadFrame.live) {//åŠ è½½ç•Œé¢çš„ç§»åŠ¨äº‹ä»¶
 					LoadFrame.MouseMove(e);
-				}else if(MenuFrame.live) {//Ö÷²Ëµ¥µÄÒÆ¶¯ÊÂ¼ş
+				}else if(MenuFrame.live) {//ä¸»èœå•çš„ç§»åŠ¨äº‹ä»¶
 					MenuFrame.MouseMove(e);
-				}else if(AchieveFrame.live) {//³É¾ÍÏµÍ³µÄÒÆ¶¯ÊÂ¼ş
+				}else if(AchieveFrame.live) {//æˆå°±ç³»ç»Ÿçš„ç§»åŠ¨äº‹ä»¶
 					AchieveFrame.MouseMove(e);
-				}else if(GardenFrame.live) {//»¨Ô°µÄÒÆ¶¯ÊÂ¼ş
+				}else if(GardenFrame.live) {//èŠ±å›­çš„ç§»åŠ¨äº‹ä»¶
 					GardenFrame.MouseMove(e);
-				}else if(TuJianFrame.live) {//Í¼¼øµÄÒÆ¶¯ÊÂ¼ş
+				}else if(TuJianFrame.live) {//å›¾é‰´çš„ç§»åŠ¨äº‹ä»¶
 					TuJianFrame.MouseMove(e);
-				}else if(ShopFrame.live) {//ÉÌµêµÄÒÆ¶¯ÊÂ¼ş
+				}else if(ShopFrame.live) {//å•†åº—çš„ç§»åŠ¨äº‹ä»¶
 					ShopFrame.MouseMove(e);
-				}else if(HelpFrame.live) {//HelpµÄÒÆ¶¯ÊÂ¼ş
+				}else if(HelpFrame.live) {//Helpçš„ç§»åŠ¨äº‹ä»¶
 					HelpFrame.MouseMove(e);
-				}else if(MiniFrame.live) {//MiniµÄÒÆ¶¯ÊÂ¼ş
+				}else if(MiniFrame.live) {//Miniçš„ç§»åŠ¨äº‹ä»¶
 					MiniFrame.MouseMove(e);
-				}else if(PuzzleFrame.live) {//PuzzleµÄÒÆ¶¯ÊÂ¼ş
+				}else if(PuzzleFrame.live) {//Puzzleçš„ç§»åŠ¨äº‹ä»¶
 					PuzzleFrame.MouseMove(e);
-				}else if(SurvivalFrame.live) {//SurvivalµÄÒÆ¶¯ÊÂ¼ş
+				}else if(SurvivalFrame.live) {//Survivalçš„ç§»åŠ¨äº‹ä»¶
 					SurvivalFrame.MouseMove(e);
-				}else if(GameFrame.live) {//GameFrameµÄÒÆ¶¯ÊÂ¼ş
+				}else if(GameFrame.live) {//GameFrameçš„ç§»åŠ¨äº‹ä»¶
 					GameFrame.MouseMove(e);
 				}
 				
@@ -132,27 +141,27 @@ public class Enter extends Frame{
 	
 	
 	public void paint(Graphics g) {
-		if(LoadFrame.live) {//»æÖÆ¼ÓÔØ½çÃæ
+		if(LoadFrame.live) {//ç»˜åˆ¶åŠ è½½ç•Œé¢
 			LoadFrame.draw(g);
-		}else if(MenuFrame.live) {//»æÖÆÖ÷²Ëµ¥½çÃæ
+		}else if(MenuFrame.live) {//ç»˜åˆ¶ä¸»èœå•ç•Œé¢
 			MenuFrame.draw(g);
-		}else if(AchieveFrame.live) {//»æÖÆ³É¾Í½çÃæ
+		}else if(AchieveFrame.live) {//ç»˜åˆ¶æˆå°±ç•Œé¢
 			AchieveFrame.draw(g);
-		}else if(GardenFrame.live) {//»æÖÆ»¨Ô°½çÃæ
+		}else if(GardenFrame.live) {//ç»˜åˆ¶èŠ±å›­ç•Œé¢
 			GardenFrame.draw(g);
-		}else if(TuJianFrame.live) {//»æÖÆÍ¼¼ø½çÃæ
+		}else if(TuJianFrame.live) {//ç»˜åˆ¶å›¾é‰´ç•Œé¢
 			TuJianFrame.draw(g);
-		}else if(ShopFrame.live) {//»æÖÆÉÌµê½çÃæ
+		}else if(ShopFrame.live) {//ç»˜åˆ¶å•†åº—ç•Œé¢
 			ShopFrame.draw(g);
-		}else if(HelpFrame.live) {//»æÖÆHelp½çÃæ
+		}else if(HelpFrame.live) {//ç»˜åˆ¶Helpç•Œé¢
 			HelpFrame.draw(g);
-		}else if(MiniFrame.live) {//»æÖÆMini½çÃæ
+		}else if(MiniFrame.live) {//ç»˜åˆ¶Miniç•Œé¢
 			MiniFrame.draw(g);
-		}else if(PuzzleFrame.live) {//»æÖÆPuzzle½çÃæ
+		}else if(PuzzleFrame.live) {//ç»˜åˆ¶Puzzleç•Œé¢
 			PuzzleFrame.draw(g);
-		}else if(SurvivalFrame.live) {//»æÖÆSurvival½çÃæ
+		}else if(SurvivalFrame.live) {//ç»˜åˆ¶Survivalç•Œé¢
 			SurvivalFrame.draw(g);
-		}else if(GameFrame.live) {//»æÖÆ¿ªÊ¼ÓÎÏ·½çÃæ
+		}else if(GameFrame.live) {//ç»˜åˆ¶å¼€å§‹æ¸¸æˆç•Œé¢
 			GameFrame.draw(g);
 		}
 		
@@ -164,7 +173,7 @@ public class Enter extends Frame{
 	
 	
 	/*
-	 * Ë«»º³å½â¾öÉÁË¸ÎÊÌâ
+	 * åŒç¼“å†²è§£å†³é—ªçƒé—®é¢˜
 	 */
 	private Image offScreenImage=null;
 	public void update(Graphics g)

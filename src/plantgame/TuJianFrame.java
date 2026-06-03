@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * Í¼¼ø½çÃæ
+ * å›¾é‰´ç•Œé¢
  */
 public class TuJianFrame  {
 	
@@ -14,7 +14,7 @@ public class TuJianFrame  {
 	 static boolean live;
 	 static GameUtil util;
 	 static Image img[];
-	 //³õÊ¼»¯ÊôĞÔ
+	 //åˆå§‹åŒ–å±æ€§
 	static {
 		 x=0;
 		 y=30;
@@ -28,95 +28,95 @@ public class TuJianFrame  {
 			 img[i]=GameUtil.getImage("TuJianFrame/tujian ("+(i+1)+").png");
 			 }
 		 }
-	//»æÖÆ»­Ãæ·½·¨
+	//ç»˜åˆ¶ç”»é¢æ–¹æ³•
 	public static void draw(Graphics g) {
 		g.drawImage(img[op],x,y,null);
 	}
-	//Êó±êÒÆ¶¯ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseMove(MouseEvent e){
-		if(loadtime==0) {                                      //µÚÒ»¸ö½çÃæÒÆ¶¯Êó±ê
-			if(GameUtil.ifRect(e.getX(),e.getY(),701,605,782,622)) {//¹Ø±Õ
+		if(loadtime==0) {                                      //ç¬¬ä¸€ä¸ªç•Œé¢ç§»åŠ¨é¼ æ ‡
+			if(GameUtil.ifRect(e.getX(),e.getY(),701,605,782,622)) {//å…³é—­
 				op=3;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),516,332,667,368)) {//½©Ê¬Í¼¼ø
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),516,332,667,368)) {//åƒµå°¸å›¾é‰´
 				op=2;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),132,330,285,366)) {//Ö²ÎïÍ¼¼ø
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),132,330,285,366)) {//æ¤ç‰©å›¾é‰´
 				op=1;
 			}else {op=0;}
 		}else if(loadtime==1) {
-			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//¹Ø±Õ
+			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//å…³é—­
 				op=19;
 			}else if(GameUtil.ifRect(e.getX(),e.getY(),42,602,198,620)) {//back
 				op=18;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),35,124,83,192)) {//Íã¶¹ÉäÊÖ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),35,124,83,192)) {//è±Œè±†å°„æ‰‹
 				op=13;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),86,124,134,192)) {//ÏòÈÕ¿û
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),86,124,134,192)) {//å‘æ—¥è‘µ
 				op=14;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),191,124,239,192)) {//¼á¹û
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),191,124,239,192)) {//åšæœ
 				op=15;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),294,124,343,192)) {//º®±ùÍã¶¹
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),294,124,343,192)) {//å¯’å†°è±Œè±†
 				op=16;
 			}else{op=12;}
 		}else if(loadtime==2) {
-			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//¹Ø±Õ
+			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//å…³é—­
 				op=11;
 			}else if(GameUtil.ifRect(e.getX(),e.getY(),42,602,198,620)) {//back
 				op=10;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,122,103,190)) {//ÆÕÍ¨½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,122,103,190)) {//æ™®é€šåƒµå°¸
 				op=4;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,122,272,190)) {//Â·ÕÏ½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,122,272,190)) {//è·¯éšœåƒµå°¸
 				op=5;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),372,122,442,190)) {//ÌúÍ¨½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),372,122,442,190)) {//é“é€šåƒµå°¸
 				op=6;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,202,103,270)) {//±¨Ö½½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,202,103,270)) {//æŠ¥çº¸åƒµå°¸
 				op=7;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,202,272,270)) {//éÏé­Çò½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,202,272,270)) {//æ©„æ¦„çƒåƒµå°¸
 			    op=8;
 			}else{op=9;}
 		}
 	}
 
 	
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseClick(MouseEvent e){
 		if(loadtime==0) {
-			if(GameUtil.ifRect(e.getX(),e.getY(),701,605,782,622)) {//¹Ø±Õ
+			if(GameUtil.ifRect(e.getX(),e.getY(),701,605,782,622)) {//å…³é—­
 				TuJianFrame.live=false;MenuFrame.live=true;op=0;loadtime=0;
 				 util.stopBGM();LoadFrame.util.playBGM();
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),516,332,667,368)) {//½©Ê¬Í¼¼ø
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),516,332,667,368)) {//åƒµå°¸å›¾é‰´
 				loadtime=2;util.playBGM("sounds/bgm0.wav",1);op=4;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),132,330,285,366)) {//Ö²ÎïÍ¼¼ø
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),132,330,285,366)) {//æ¤ç‰©å›¾é‰´
 				loadtime=1;util.playBGM("sounds/bgm0.wav",1);op=12;
 			}
 		}else if(loadtime==1) {
-			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//¹Ø±Õ
+			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//å…³é—­
 				TuJianFrame.live=false;MenuFrame.live=true;op=0;loadtime=0;
 				 LoadFrame.util.playBGM();util.stopBGM();
 			}else if(GameUtil.ifRect(e.getX(),e.getY(),42,602,198,620)) {//back
 				loadtime=0;util.playBGM("sounds/bgm0.wav",1);op=0;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),35,124,83,192)) {//Íã¶¹ÉäÊÖ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),35,124,83,192)) {//è±Œè±†å°„æ‰‹
 				util.playBGM("sounds/bgm0.wav",1);op=13;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),86,124,134,192)) {//ÏòÈÕ¿û
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),86,124,134,192)) {//å‘æ—¥è‘µ
 				util.playBGM("sounds/bgm0.wav",1);op=14;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),191,124,239,192)) {//¼á¹û
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),191,124,239,192)) {//åšæœ
 				util.playBGM("sounds/bgm0.wav",1);op=15;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),294,124,343,192)) {//º®±ùÍã¶¹
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),294,124,343,192)) {//å¯’å†°è±Œè±†
 				util.playBGM("sounds/bgm0.wav",1);op=16;
 			}else{util.playBGM("sounds/bgm0.wav",1);op=17;}
 		}else if(loadtime==2) {
-			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//¹Ø±Õ
+			if(GameUtil.ifRect(e.getX(),e.getY(),687,602,771,620)) {//å…³é—­
 				TuJianFrame.live=false;MenuFrame.live=true;op=0;loadtime=0;
 				 LoadFrame.util.playBGM();util.stopBGM();
 			}else if(GameUtil.ifRect(e.getX(),e.getY(),42,602,198,620)) {//back
 				loadtime=0;util.playBGM("sounds/bgm0.wav",1);op=0;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,122,103,190)) {//ÆÕÍ¨½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,122,103,190)) {//æ™®é€šåƒµå°¸
 				util.playBGM("sounds/bgm0.wav",1);op=4;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,122,272,190)) {//Â·ÕÏ½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,122,272,190)) {//è·¯éšœåƒµå°¸
 				util.playBGM("sounds/bgm0.wav",1);op=5;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),372,122,442,190)) {//ÌúÍ¨½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),372,122,442,190)) {//é“é€šåƒµå°¸
 				util.playBGM("sounds/bgm0.wav",1);op=6;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,202,103,270)) {//±¨Ö½½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),31,202,103,270)) {//æŠ¥çº¸åƒµå°¸
 				util.playBGM("sounds/bgm0.wav",1);op=7;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,202,272,270)) {//éÏé­Çò½©Ê¬
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),203,202,272,270)) {//æ©„æ¦„çƒåƒµå°¸
 				util.playBGM("sounds/bgm0.wav",1);op=8;
 			}else{util.playBGM("sounds/bgm0.wav",1);op=9;}
 		}

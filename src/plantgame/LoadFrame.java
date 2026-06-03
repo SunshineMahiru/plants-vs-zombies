@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * ¼ÓÔØ½çÃæ
+ * åŠ è½½ç•Œé¢
  */
 public class LoadFrame  {
 	
@@ -14,7 +14,7 @@ public class LoadFrame  {
 	 static boolean live;
 	 static GameUtil util;
 	 static Image img[];
-	 //³õÊ¼»¯ÊôĞÔ
+	 //åˆå§‹åŒ–å±æ€§
 	static {
 		 x=0;
 		 y=30;
@@ -28,7 +28,7 @@ public class LoadFrame  {
 			 img[i]=GameUtil.getImage("LoadFrame/load ("+(i+1)+").png");
 			 }
 		 }
-	//»æÖÆ»­Ãæ·½·¨
+	//ç»˜åˆ¶ç”»é¢æ–¹æ³•
 	public static void draw(Graphics g) {
 		if(loadtime==0) {
 			for(int i=0;i<img.length-2;i++) {
@@ -48,7 +48,7 @@ public class LoadFrame  {
 			}
 		}
 	}
-	//Êó±êÒÆ¶¯ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseMove(MouseEvent e){
 		if(GameUtil.ifRect(e.getX(),e.getY(),326,576,484,605)) {
 			op=1;
@@ -56,7 +56,7 @@ public class LoadFrame  {
 	}
 
 	
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseClick(MouseEvent e){
 		if(GameUtil.ifRect(e.getX(),e.getY(),326,576,484,605)) {
 			live=false;op=0;util.playBGM("sounds/bgm0.wav",1);

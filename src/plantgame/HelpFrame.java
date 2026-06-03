@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * °ïÖú½çÃæ
+ * å¸®åŠ©ç•Œé¢
  */
 public class HelpFrame  {
 	
@@ -14,7 +14,7 @@ public class HelpFrame  {
 	 static GameUtil util;
 	 static boolean live;
 	 static Image img[];
-	 //³õÊ¼»¯ÊôĞÔ
+	 //åˆå§‹åŒ–å±æ€§
 	static {
 		 x=0;
 		 y=30;
@@ -27,19 +27,19 @@ public class HelpFrame  {
 			 img[i]=GameUtil.getImage("HelpFrame/help"+i+".png");
 			 }
 		 }
-	//»æÖÆ»­Ãæ·½·¨
+	//ç»˜åˆ¶ç”»é¢æ–¹æ³•
 	public static void draw(Graphics g) {
 		g.drawImage(img[op],x,y,null);
 	}
-	//Êó±êÒÆ¶¯ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseMove(MouseEvent e){
-		if(GameUtil.ifRect(e.getX(),e.getY(),333,555,486,590)) {//Ö÷²Ëµ¥
+		if(GameUtil.ifRect(e.getX(),e.getY(),333,555,486,590)) {//ä¸»èœå•
 			op=1;
 		}else {op=0;}
 	}
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí·½·¨
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†æ–¹æ³•
 	public static void MouseClick(MouseEvent e){
-		if(GameUtil.ifRect(e.getX(),e.getY(),333,555,486,590)) {//Ö÷²Ëµ¥
+		if(GameUtil.ifRect(e.getX(),e.getY(),333,555,486,590)) {//ä¸»èœå•
 			HelpFrame.live=false;MenuFrame.live=true;op=0;loadtime=0;
 			util.playBGM("sounds/bgm0.wav",1);LoadFrame.util.playBGM();
 		}

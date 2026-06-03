@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * »¨Ô°½çÃæ
+ * èŠ±å›­ç•Œé¢
  */
 public class ShopFrame  {
 	
@@ -28,136 +28,136 @@ public class ShopFrame  {
 			 img[i]=GameUtil.getImage("ShopFrame/shop ("+(i+1)+").png");
 			 }
 		 }
-	//»æÖÆ½çÃæ
+	//ç»˜åˆ¶ç•Œé¢
 	public static void draw(Graphics g) {
-		g.drawImage(img[op],x,y,null);   // ÉÌµê½çÃæµÄ±³¾°
+		g.drawImage(img[op],x,y,null);   // å•†åº—ç•Œé¢çš„èƒŒæ™¯
 	}
-	//Êó±êÒÆ¶¯ÊÂ¼ş´¦Àí
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†
 	public static void MouseMove(MouseEvent e) {
-		if(loadtime==0) {                                      //ÉÌµêµÚÒ»Ò³
-			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//Ö÷²Ëµ¥
+		if(loadtime==0) {                                      //å•†åº—ç¬¬ä¸€é¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//ä¸»èœå•
 				op=11;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				op=9;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				op=10;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),420,252,480,324)) {//¿¨Æ¬²Û
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),420,252,480,324)) {//å¡ç‰‡æ§½
 				op=1;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),505,252,554,324)) {//³ØÌÁ³µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),505,252,554,324)) {//æ± å¡˜è½¦
 				op=2;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),571,252,628,324)) {//¶¤°Ò
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),571,252,628,324)) {//é’‰è€™
 				op=3;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),653,252,702,324)) {//·¿¶¥³µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),653,252,702,324)) {//æˆ¿é¡¶è½¦
 				op=4;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),381,343,432,428)) {//»úÇ¹Íã¶¹
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),381,343,432,428)) {//æœºæªè±Œè±†
 				op=5;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),454,343,503,428)) {//Ë«°ûÏòÈÕ¿û
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),454,343,503,428)) {//åŒèƒå‘æ—¥è‘µ
 				op=6;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),529,343,577,428)) {//¶à×ì´óÅç¹½
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),529,343,577,428)) {//å¤šå˜´å¤§å–·è‡
 				op=7;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),602,343,651,428)) {//Ë¯Á«
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),602,343,651,428)) {//ç¡è²
 				op=8;
 			}else {op=0;}
-		}else if(loadtime==1) {                                      //ÉÌµêµÚ¶şÒ³
-			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//Ö÷²Ëµ¥
+		}else if(loadtime==1) {                                      //å•†åº—ç¬¬äºŒé¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//ä¸»èœå•
 				op=21;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				op=19;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				op=20;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),430,239,480,324)) {//¸ÖµØ´Ì
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),430,239,480,324)) {//é’¢åœ°åˆº
 				op=13;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),504,239,554,324)) {//Îü½ğÊ¯
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),504,239,554,324)) {//å¸é‡‘çŸ³
 				op=14;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),579,239,627,324)) {//±ù¶³Î÷¹Ï
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),579,239,627,324)) {//å†°å†»è¥¿ç“œ
 				op=15;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),652,239,701,324)) {//ÓñÃ×¼ÓÅ©ÅÚ	
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),652,239,701,324)) {//ç‰ç±³åŠ å†œç‚®	
 				op=16;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),381,343,430,428)) {//±äÉíÇÑ×Ó
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),381,343,430,428)) {//å˜èº«èŒ„å­
 				op=17;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),456,357,505,428)) {//¼á¹ûÓúºÏÊõ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),456,357,505,428)) {//åšæœæ„ˆåˆæœ¯
 				op=18;
 			}else {op=12;}
-		}else if(loadtime==2) {                                      //ÉÌµêµÚÈıÒ³
-			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//Ö÷²Ëµ¥
+		}else if(loadtime==2) {                                      //å•†åº—ç¬¬ä¸‰é¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//ä¸»èœå•
 				op=31;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				op=29;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				op=30;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),429,261,628,323)) {//»¨Åè
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),429,261,628,323)) {//èŠ±ç›†
 				op=23;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),644,242,702,324)) {//½ğË®ºø
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),644,242,702,324)) {//é‡‘æ°´å£¶
 				op=24;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),381,351,431,430)) {//»¯·Ê
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),381,351,431,430)) {//åŒ–è‚¥
 				op=25;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),454,348,504,428)) {//É±³æ¼Á
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),454,348,504,428)) {//æ€è™«å‰‚
 				op=26;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),529,346,577,427)) {//ÁôÉù»ú
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),529,346,577,427)) {//ç•™å£°æœº
 				op=27;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),600,348,655,428)) {//ÊÖÌ×
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),600,348,655,428)) {//æ‰‹å¥—
 				op=28;
 			}else {op=22;}
-		}else if(loadtime==3) {                                      //ÉÌµêµÚËÄÒ³
-			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//Ö÷²Ëµ¥
+		}else if(loadtime==3) {                                      //å•†åº—ç¬¬å››é¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {//ä¸»èœå•
 				op=41;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				op=39;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				op=40;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),421,239,487,325)) {//Ä¢¹½Ô°
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),421,239,487,325)) {//è˜‘è‡å›­
 				op=33;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),496,240,561,323)) {//Ë®×å¹İ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),496,240,561,323)) {//æ°´æ—é¦†
 				op=34;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),573,260,631,324)) {//ÊÖÍÆ³µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),573,260,631,324)) {//æ‰‹æ¨è½¦
 				op=35;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),650,254,701,323)) {//ÎÏÅ£
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),650,254,701,323)) {//èœ—ç‰›
 				op=36;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),371,342,437,428)) {//ÖÇ»ÛÊ÷
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),371,342,437,428)) {//æ™ºæ…§æ ‘
 				op=37;
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),457,353,504,427)) {//ÖÇ»ÛÊ÷·ÊÁÏ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),457,353,504,427)) {//æ™ºæ…§æ ‘è‚¥æ–™
 				op=38;
 			}else {op=32;}
 		}
 	}
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†
 	public static void MouseClick(MouseEvent e) {
-		if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {   //·µ»ØÖ÷²Ëµ¥°´Å¥
+		if(GameUtil.ifRect(e.getX(),e.getY(),374,551,499,619)) {   //è¿”å›ä¸»èœå•æŒ‰é’®
 			live=false;MenuFrame.live=true;op=0;loadtime=0;
 			util.playBGM("sounds/bgm0.wav",1);
 		}
 		
-		if(loadtime==0) {//ÉÌµêµÚÒ»Ò³
-			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+		if(loadtime==0) {//å•†åº—ç¬¬ä¸€é¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=32;loadtime=3;              //ÇĞ»»µ½µÚËÄÒ³
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+				op=32;loadtime=3;              //åˆ‡æ¢åˆ°ç¬¬å››é¡µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=12;loadtime=1;              //ÇĞ»»µ½µÚ¶şÒ³
+				op=12;loadtime=1;              //åˆ‡æ¢åˆ°ç¬¬äºŒé¡µ
 			}
-		}else if(loadtime==1) {//ÉÌµêµÚ¶şÒ³
-			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+		}else if(loadtime==1) {//å•†åº—ç¬¬äºŒé¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=0;loadtime=0;              //ÇĞ»»µ½µÚÒ»Ò³
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+				op=0;loadtime=0;              //åˆ‡æ¢åˆ°ç¬¬ä¸€é¡µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=22;loadtime=2;           //ÇĞ»»µ½µÚÈıÒ³
+				op=22;loadtime=2;           //åˆ‡æ¢åˆ°ç¬¬ä¸‰é¡µ
 			}
-		}else if(loadtime==2) {//ÉÌµêµÚÈıÒ³
-			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+		}else if(loadtime==2) {//å•†åº—ç¬¬ä¸‰é¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=12;loadtime=1;              //ÇĞ»»µ½µÚ¶şÒ³
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+				op=12;loadtime=1;              //åˆ‡æ¢åˆ°ç¬¬äºŒé¡µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=32;loadtime=3;             //ÇĞ»»µ½µÚËÄÒ³
+				op=32;loadtime=3;             //åˆ‡æ¢åˆ°ç¬¬å››é¡µ
 			}
-		}else if(loadtime==3) {//ÉÌµêµÚËÄÒ³
-			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ÉÏÒ»Ò³
+		}else if(loadtime==3) {//å•†åº—ç¬¬å››é¡µ
+			if(GameUtil.ifRect(e.getX(),e.getY(),267,440,348,500)) {//ä¸Šä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=22;loadtime=2;              //ÇĞ»»µ½µÚÈıÒ³
-			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ÏÂÒ»Ò³
+				op=22;loadtime=2;              //åˆ‡æ¢åˆ°ç¬¬ä¸‰é¡µ
+			}else if(GameUtil.ifRect(e.getX(),e.getY(),625,440,738,500)) {//ä¸‹ä¸€é¡µ
 				util.playBGM("sounds/bgm5.wav",1);
-				op=0;loadtime=0;               //ÇĞ»»µ½µÚÒ»Ò³
+				op=0;loadtime=0;               //åˆ‡æ¢åˆ°ç¬¬ä¸€é¡µ
 			}
 		}
 	}

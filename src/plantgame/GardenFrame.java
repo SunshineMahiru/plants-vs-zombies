@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 /*
- * »¨Ô°½çÃæ
+ * èŠ±å›­ç•Œé¢
  */
 public class GardenFrame  {
 	
@@ -29,11 +29,11 @@ public class GardenFrame  {
 			 img[i]=GameUtil.getImage("GardenFrame/garden ("+(i+1)+").png");
 			 }
 		 }
-	//»æÖÆ½çÃæ
+	//ç»˜åˆ¶ç•Œé¢
 	public static void draw(Graphics g) {
-		g.drawImage(img[op],x,y,null);   // »¨Ô°½çÃæµÄ±³¾°
+		g.drawImage(img[op],x,y,null);   // èŠ±å›­ç•Œé¢çš„èƒŒæ™¯
 		
-		for(int i=9;i<=16;i++) {              // »¨Ô°½çÃæµÄ¹¤¾ß
+		for(int i=9;i<=16;i++) {              // èŠ±å›­ç•Œé¢çš„å·¥å…·
 			if(i==11) {
 				g.drawImage(img[i],70*(i-9),31,null);
 			}else if(i==12) {
@@ -45,15 +45,15 @@ public class GardenFrame  {
 			else g.drawImage(img[i],70*(i-9),26,null);
 		}
 	}
-	//Êó±êÒÆ¶¯ÊÂ¼ş ´¦Àí
+	//é¼ æ ‡ç§»åŠ¨äº‹ä»¶ å¤„ç†
 	public static void MouseMove(MouseEvent e) {
-		if(GameUtil.ifRect(e.getX(),e.getY(),639,42,793,80)) {//Ö÷²Ëµ¥¼ü
+		if(GameUtil.ifRect(e.getX(),e.getY(),639,42,793,80)) {//ä¸»èœå•é”®
 			 if(loadtime==0) {
 				 op=1;
 			 }else if(loadtime==1) {
 				 op=4;;
 			 }else {op=7;}
-	 }else if(GameUtil.ifRect(e.getX(),e.getY(),727,88,683,139,792,128,802,90)) {//Í¨ÍùÉÌµê
+	 }else if(GameUtil.ifRect(e.getX(),e.getY(),727,88,683,139,792,128,802,90)) {//é€šå¾€å•†åº—
 		 if(loadtime==0) {
 			 op=2;
 		 }else if(loadtime==1) {
@@ -67,15 +67,15 @@ public class GardenFrame  {
 		 }else {op=6;}
     }
 	}
-	//Êó±êµã»÷ÊÂ¼ş´¦Àí
+	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶å¤„ç†
 public static void MouseClick(MouseEvent e) {
-	if(GameUtil.ifRect(e.getX(),e.getY(),639,42,793,80)) {//·µ»ØÖ÷²Ëµ¥¼ü
+	if(GameUtil.ifRect(e.getX(),e.getY(),639,42,793,80)) {//è¿”å›ä¸»èœå•é”®
 		 op=0;loadtime=0;live=false;MenuFrame.live=true;util.playBGM("sounds/bgm2.wav",1);
 		 LoadFrame.util.playBGM();util.stopBGM();
-	}else if(GameUtil.ifRect(e.getX(),e.getY(),727,88,683,139,792,128,802,90)) {//Í¨ÍùÉÌµê
+	}else if(GameUtil.ifRect(e.getX(),e.getY(),727,88,683,139,792,128,802,90)) {//é€šå¾€å•†åº—
 		 op=0;loadtime=0;live=false;ShopFrame.live=true;util.playBGM("sounds/bgm0.wav",1);
 		 LoadFrame.util.playBGM();util.stopBGM();
-		}else if(GameUtil.ifRect(e.getX(),e.getY(),573,45,627,87)) {//Í¨ÍùÏÂÒ»¸ö»¨Ô°³¡¾°
+		}else if(GameUtil.ifRect(e.getX(),e.getY(),573,45,627,87)) {//é€šå¾€ä¸‹ä¸€ä¸ªèŠ±å›­åœºæ™¯
 		if(loadtime==0) {
 			op=3;util.playBGM("sounds/bgm0.wav",1);loadtime++;
 		}else if(loadtime==1){
