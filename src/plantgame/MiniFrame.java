@@ -43,7 +43,7 @@ public class MiniFrame  {
 	public static void MouseClick(MouseEvent e){
 		if(GameUtil.ifRect(e.getX(),e.getY(),29,603,133,620)) {//返回主菜单
 			live=false;MenuFrame.live=true;util.playBGM("sounds/bgm0.wav",1);op=0;
-			LoadFrame.util.playBGM();TuJianFrame.util.stopBGM();
+			LoadFrame.util.playBGM();
 		}
 	}
 	

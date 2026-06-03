@@ -61,14 +61,6 @@ public class Enter extends Frame{
 					LoadFrame.MouseClick(e);
 				}else if(MenuFrame.live) {//主菜单的点击事件
 					MenuFrame.MouseClick(e);
-				}else if(AchieveFrame.live) {//成就系统的点击事件
-					AchieveFrame.MouseClick(e);
-				}else if(GardenFrame.live) {//花园的点击事件
-					GardenFrame.MouseClick(e);
-				}else if(TuJianFrame.live) {//图鉴的点击事件
-					TuJianFrame.MouseClick(e);
-				}else if(ShopFrame.live) {//商店的点击事件
-					ShopFrame.MouseClick(e);
 				}else if(HelpFrame.live) {//Help的点击事件
 					HelpFrame.MouseClick(e);
 				}else if(MiniFrame.live) {//Mini的点击事件
@@ -80,12 +72,6 @@ public class Enter extends Frame{
 				}else if(GameFrame.live) {//GameFrame的点击事件
 					GameFrame.MouseClick(e);
 				}
-				
-				
-				
-				
-				
-				
 			}
 		});
 		//右键取消选择植物
@@ -105,14 +91,6 @@ public class Enter extends Frame{
 					LoadFrame.MouseMove(e);
 				}else if(MenuFrame.live) {//主菜单的移动事件
 					MenuFrame.MouseMove(e);
-				}else if(AchieveFrame.live) {//成就系统的移动事件
-					AchieveFrame.MouseMove(e);
-				}else if(GardenFrame.live) {//花园的移动事件
-					GardenFrame.MouseMove(e);
-				}else if(TuJianFrame.live) {//图鉴的移动事件
-					TuJianFrame.MouseMove(e);
-				}else if(ShopFrame.live) {//商店的移动事件
-					ShopFrame.MouseMove(e);
 				}else if(HelpFrame.live) {//Help的移动事件
 					HelpFrame.MouseMove(e);
 				}else if(MiniFrame.live) {//Mini的移动事件
@@ -124,14 +102,6 @@ public class Enter extends Frame{
 				}else if(GameFrame.live) {//GameFrame的移动事件
 					GameFrame.MouseMove(e);
 				}
-				
-				
-				
-				
-				
-				
-				
-				
 			}
 		});
 	}
@@ -145,14 +115,6 @@ public class Enter extends Frame{
 			LoadFrame.draw(g);
 		}else if(MenuFrame.live) {//绘制主菜单界面
 			MenuFrame.draw(g);
-		}else if(AchieveFrame.live) {//绘制成就界面
-			AchieveFrame.draw(g);
-		}else if(GardenFrame.live) {//绘制花园界面
-			GardenFrame.draw(g);
-		}else if(TuJianFrame.live) {//绘制图鉴界面
-			TuJianFrame.draw(g);
-		}else if(ShopFrame.live) {//绘制商店界面
-			ShopFrame.draw(g);
 		}else if(HelpFrame.live) {//绘制Help界面
 			HelpFrame.draw(g);
 		}else if(MiniFrame.live) {//绘制Mini界面
@@ -164,11 +126,6 @@ public class Enter extends Frame{
 		}else if(GameFrame.live) {//绘制开始游戏界面
 			GameFrame.draw(g);
 		}
-		
-		
-		
-		
-		
 	}
 	
 	
