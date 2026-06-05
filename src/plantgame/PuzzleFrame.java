@@ -17,7 +17,7 @@ public class PuzzleFrame  {
 	 //初始化属性
 	static {
 		 x=0;
-		 y=30;
+		 y=0;
 		 loadtime=0;
 		 op=0;
 		 live=false; 
@@ -29,7 +29,7 @@ public class PuzzleFrame  {
 		 }
 	//绘制画面方法
 	public static void draw(Graphics g) {
-		g.drawImage(img[op],x,y,null);
+		g.drawImage(img[op],x,y,900,600,null);
 	}
 	//鼠标移动事件处理方法
 	public static void MouseMove(MouseEvent e){

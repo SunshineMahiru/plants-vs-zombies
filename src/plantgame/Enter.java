@@ -1,4 +1,7 @@
 package plantgame;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -13,7 +16,7 @@ public class Enter extends Frame{
 		@Override
 		public void run() {
 			while(true) {
-				repaint();
+				gameCanvas.repaint();
 				try {
 					Thread.sleep(40);
 				} catch (InterruptedException e) {
@@ -32,15 +35,41 @@ public class Enter extends Frame{
 		new GameFrame();
 		new Enter();
 	}
+
+	// 游戏画布，确保客户区精确900x600
+	Canvas gameCanvas;
+	// 双缓冲图像
+	private Image offScreenImage = null;
+
 	//构造方法
 	public Enter() {
 		Image ico=GameUtil.getImage(("LoadFrame/ico.png"));/*植物大战僵尸图标*/
 		this.setTitle("植物VS僵尸");
 		this.setIconImage(ico);   /*设置窗口的logo*/
-		this.setSize(800,632);/*场景的长和宽*/
+		this.setLayout(new BorderLayout());
+
+		// 创建固定大小的Canvas，确保客户区精确900x600
+		gameCanvas = new Canvas() {
+			@Override
+			public void paint(Graphics g) {
+				paintContent(g);
+			}
+			@Override
+			public void update(Graphics g) {
+				// 双缓冲
+				if(offScreenImage==null) offScreenImage=this.createImage(900,600);
+				Graphics gOff=offScreenImage.getGraphics();
+				paintContent(gOff);
+				g.drawImage(offScreenImage,0,0,null);
+			}
+		};
+		gameCanvas.setPreferredSize(new Dimension(900, 600));
+		this.add(gameCanvas, BorderLayout.CENTER);
+		this.pack();
+		this.setResizable(false);
 		this.setLocation(300,100);
 		this.setVisible(true);
-		this.setResizable(false);
+
 		LoadFrame.live=true;
 		LoadFrame.util.playBGM();
 		//新建线程
@@ -54,7 +83,7 @@ public class Enter extends Frame{
 			}
 		});
 		//内部类监听鼠标点击事件
-		this.addMouseListener(new MouseAdapter() {
+		gameCanvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(LoadFrame.live) {//加载界面单击事件
@@ -75,7 +104,7 @@ public class Enter extends Frame{
 			}
 		});
 		//右键取消选择植物
-		this.addMouseListener(new MouseAdapter() {
+		gameCanvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if(e.getButton()==MouseEvent.BUTTON3 && GameFrame.live) {
@@ -84,7 +113,7 @@ public class Enter extends Frame{
 			}
 		});
 		//内部类监听鼠移动击事件
-		this.addMouseMotionListener(new MouseAdapter() {
+		gameCanvas.addMouseMotionListener(new MouseAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				if(LoadFrame.live) {//加载界面的移动事件
@@ -95,9 +124,9 @@ public class Enter extends Frame{
 					HelpFrame.MouseMove(e);
 				}else if(MiniFrame.live) {//Mini的移动事件
 					MiniFrame.MouseMove(e);
-				}else if(PuzzleFrame.live) {//Puzzle的移动事件
+				}else if(PuzzleFrame.live) {//Puzzle的点击事件
 					PuzzleFrame.MouseMove(e);
-				}else if(SurvivalFrame.live) {//Survival的移动事件
+				}else if(SurvivalFrame.live) {//Survival的点击事件
 					SurvivalFrame.MouseMove(e);
 				}else if(GameFrame.live) {//GameFrame的移动事件
 					GameFrame.MouseMove(e);
@@ -105,12 +134,13 @@ public class Enter extends Frame{
 			}
 		});
 	}
-	
-	
-	
-	
-	
-	public void paint(Graphics g) {
+
+	// 统一绘制方法
+	public void paintContent(Graphics g) {
+		// 清屏
+		g.setColor(java.awt.Color.BLACK);
+		g.fillRect(0, 0, 900, 600);
+
 		if(LoadFrame.live) {//绘制加载界面
 			LoadFrame.draw(g);
 		}else if(MenuFrame.live) {//绘制主菜单界面
@@ -126,18 +156,5 @@ public class Enter extends Frame{
 		}else if(GameFrame.live) {//绘制开始游戏界面
 			GameFrame.draw(g);
 		}
-	}
-	
-	
-	/*
-	 * 双缓冲解决闪烁问题
-	 */
-	private Image offScreenImage=null;
-	public void update(Graphics g)
-	{
-		if(offScreenImage==null)offScreenImage=this.createImage(804,640);
-		Graphics gOff=offScreenImage.getGraphics();
-		paint(gOff);
-		g.drawImage(offScreenImage,0,0,null);
 	}
 }

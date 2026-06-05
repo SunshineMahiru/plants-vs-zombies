@@ -17,7 +17,7 @@ public class MenuFrame {
 	
 	static {
 		 x=0;
-		 y=30;
+		 y=0;
 		 loadtime=0;
 		 op=0;
 		 live=false;
@@ -53,7 +53,7 @@ public class MenuFrame {
 	public static void MouseClick(MouseEvent e) {
 		if(GameUtil.ifRect(e.getX(),e.getY(),460,180,459,233,740,277,752,211)){//开始冒险
 			MenuFrame.live=false;GameFrame.live=true;loadtime=0;op=0;LoadFrame.util.stopBGM();
-			GameFrame.util.playBGM();util.playBGM("sounds/bgm7.wav", 1);
+			GameFrame.util.loadBGM("sounds/bgm6.wav");GameFrame.util.playBGM();
 		}else if(GameUtil.ifRect(e.getX(),e.getY(),461,248,460,313,719,360,737,298)){//mini模式
 			MenuFrame.live=false;MiniFrame.live=true;loadtime=0;op=0;util.playBGM("sounds/bgm0.wav",1);
 			LoadFrame.util.stopBGM();
@@ -67,6 +67,6 @@ public class MenuFrame {
 	}
 
 	public static void draw(Graphics g) {
-		g.drawImage(img[op],x,y,800,600,null);
+		g.drawImage(img[op],x,y,900,600,null);
 	} 
 }

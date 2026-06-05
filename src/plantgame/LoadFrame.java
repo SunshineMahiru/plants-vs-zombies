@@ -17,7 +17,7 @@ public class LoadFrame  {
 	 //初始化属性
 	static {
 		 x=0;
-		 y=30;
+		 y=0;
 		 loadtime=0;
 		 op=0;
 		 live=false; 
@@ -32,7 +32,7 @@ public class LoadFrame  {
 	public static void draw(Graphics g) {
 		if(loadtime==0) {
 			for(int i=0;i<img.length-2;i++) {
-				g.drawImage(img[i],x,y,null);
+				g.drawImage(img[i],x,y,900,600,null);
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -42,9 +42,9 @@ public class LoadFrame  {
 			loadtime++;
 		}else if(loadtime==1) {
 			if(op==0) {
-				g.drawImage(img[img.length-2],x,y,null);
+				g.drawImage(img[img.length-2],x,y,900,600,null);
 			}else if(op==1) {
-				g.drawImage(img[img.length-1],x,y,null);
+				g.drawImage(img[img.length-1],x,y,900,600,null);
 			}
 		}
 	}
