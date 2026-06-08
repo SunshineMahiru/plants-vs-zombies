@@ -14,6 +14,27 @@ public class GameObject {
 	int speed;
 	Image img;
 	boolean live=true;
+	
+	// --- DLC 动态属性 ---
+	public String id;
+	public String name;
+	public int hp;
+	public int maxHp;
+	public int damage;
+	public int sunCost;
+	public int coolDown;
+	public AttackBehavior attackBehavior;
+	public MoveBehavior moveBehavior;
+	
+	public int getX() { return x; }
+	public void setX(int x) { this.x = x; }
+	public int getY() { return y; }
+	public void setY(int y) { this.y = y; }
+	public int getSpeed() { return speed; }
+	public void setSpeed(int speed) { this.speed = speed; }
+	public String getName() { return name == null ? "Unknown" : name; }
+	// --------------------
+
 	//无参空构造
 	public GameObject() {
 	}

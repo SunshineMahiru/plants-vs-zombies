@@ -1,0 +1,11 @@
+{
+  "dlc_name": "Mutant & Fusion Pack v1.0",
+  "enabled": true,
+  "custom_plants": [
+    { "id": "plant_zombie_bomb", "name": "植物僵尸炸弹", "hp": 300, "sun_cost": 150, "cool_down": 20, "sprite_path": "assets/dlc/bomb.png", "attack_behavior": "AOEExplodeBehavior", "damage": 1800 }
+  ],
+  "custom_zombies": [
+    { "id": "flying_zombie", "name": "飞行僵尸", "hp": 270, "speed": 2, "sprite_path": "assets/dlc/fly.png", "move_behavior": "FlyMoveBehavior" },
+    { "id": "moonwalk_zombie", "name": "倒退僵尸", "hp": 200, "speed": -1, "sprite_path": "assets/dlc/moonwalk.png", "move_behavior": "MoveBackwardsBehavior" }
+  ]
+}

@@ -89,6 +89,12 @@ public class GameFrame {
     static ArrayList<TieTong> tietong = new ArrayList<>();
     static ArrayList<BaoZhi> baozhi = new ArrayList<>();
     static ArrayList<GanLan> ganlan = new ArrayList<>();
+    
+    // --- DLC 实体列表 ---
+    static ArrayList<GameObject> dlcPlants = new ArrayList<>();
+    static ArrayList<GameObject> dlcZombies = new ArrayList<>();
+    // --------------------
+
     static Shove shove;
     static Hammer hammer;
     static Glove glove;
@@ -218,6 +224,9 @@ public class GameFrame {
             CARD_W, CARD_H, 175, IntroAnimation.cardImages[2], img[17]));
         card.add(new Card(cardX[3], cardY + TOOLBAR_Y_BASE,
             CARD_W, CARD_H, 50, IntroAnimation.cardImages[3], img[19]));
+            
+        // 加载 DLC 卡片
+        EntityFactory.loadDLCCards();
     }
 
     // ========== 坐标转换 ==========
@@ -462,15 +471,33 @@ public class GameFrame {
     }
 
     public static void spawnRandomZombie(int row) {
-        int type = (int)(Math.random() * 16);
+        int type = (int)(Math.random() * 20); // 调整概率范围包含DLC
         if (type < 5) {
             qizhi.add(new QiZhi(qizhis, getZombieSpriteY(row, 60), 1, 20, 100));
         } else if (type < 11) {
             tietong.add(new TieTong(tietongs, getZombieSpriteY(row, 60), 0.8, 15, 200));
         } else if (type < 14) {
             baozhi.add(new BaoZhi(baozhis, getZombieSpriteY(row, 70), 0.8, 15, 200));
-        } else {
+        } else if (type < 16) {
             ganlan.add(new GanLan(ganlans, getZombieSpriteY(row, 60), 0.8, 15, 200));
+        } else {
+            // 生成 DLC 僵尸
+            DLCConfigManager configManager = DLCConfigManager.getInstance();
+            if (configManager.getZombieTemplates().size() > 0) {
+                int dlcIndex = (int)(Math.random() * configManager.getZombieTemplates().size());
+                String targetId = (String) configManager.getZombieTemplates().keySet().toArray()[dlcIndex];
+                GameObject zombie = configManager.createZombie(targetId);
+                if (zombie != null) {
+                    // 屏幕外生成
+                    zombie.x = (int)(BG_W + Math.random() * 100);
+                    zombie.y = getZombieSpriteY(row, 60);
+                    // 默认图或者处理
+                    zombie.img = ganlans[0]; // 兜底处理图片
+                    dlcZombies.add(zombie);
+                }
+            } else {
+                qizhi.add(new QiZhi(qizhis, getZombieSpriteY(row, 60), 1, 20, 100));
+            }
         }
     }
 
@@ -547,6 +574,17 @@ public class GameFrame {
                     jianguo.get(i).drawSelf(g);
                 }
             }
+            // 绘制 DLC 植物
+            for (int i = 0; i < dlcPlants.size(); i++) {
+                if (dlcPlants.get(i).live) {
+                    dlcPlants.get(i).drawSelf(g);
+                    if (dlcPlants.get(i).attackBehavior != null) {
+                        dlcPlants.get(i).attackBehavior.attack(dlcPlants.get(i));
+                    }
+                } else {
+                    dlcPlants.remove(i);
+                }
+            }
 
             // 绘制僵尸
             for (int i = 0; i < qizhi.size(); i++) {
@@ -575,6 +613,17 @@ public class GameFrame {
                     ganlan.get(i).drawSelf(g);
                 } else {
                     ganlan.remove(i);
+                }
+            }
+            // 绘制 DLC 僵尸
+            for (int i = 0; i < dlcZombies.size(); i++) {
+                if (dlcZombies.get(i).live) {
+                    dlcZombies.get(i).drawSelf(g);
+                    if (dlcZombies.get(i).moveBehavior != null) {
+                        dlcZombies.get(i).moveBehavior.move(dlcZombies.get(i));
+                    }
+                } else {
+                    dlcZombies.remove(i);
                 }
             }
 
@@ -714,8 +763,8 @@ public class GameFrame {
         for (int i = 0; i < card.size(); i++) {
             if (card.get(i).move) {
                 card.get(i).move = false;
-                card.get(i).x = cardX[i];
-                card.get(i).y = cardY + TOOLBAR_Y_BASE;
+                card.get(i).x = card.get(i).z;
+                card.get(i).y = card.get(i).w;
             }
         }
         if (shove.move) {
@@ -953,19 +1002,27 @@ public class GameFrame {
                             glass.get(j).x, glass.get(j).y,
                             glass.get(j).x + glass.get(j).wide,
                             glass.get(j).y + glass.get(j).high)) {
-                            switch (i) {
-                                case 0:
-                                    flower.add(new Flower(glass.get(j).x, glass.get(j).y, 60, 70, j));
-                                    break;
-                                case 1:
-                                    wandou.add(new Wandou(glass.get(j).x, glass.get(j).y, 60, 70, wandous, j));
-                                    break;
-                                case 2:
-                                    hanbing.add(new Hanbing(glass.get(j).x, glass.get(j).y, 60, 70, hanbings, j));
-                                    break;
-                                case 3:
-                                    jianguo.add(new Jianguo(glass.get(j).x, glass.get(j).y, 60, 70, jianguos, j));
-                                    break;
+                            if (i >= 0 && i <= 3) {
+                                switch (i) {
+                                    case 0:
+                                        flower.add(new Flower(glass.get(j).x, glass.get(j).y, 60, 70, j));
+                                        break;
+                                    case 1:
+                                        wandou.add(new Wandou(glass.get(j).x, glass.get(j).y, 60, 70, wandous, j));
+                                        break;
+                                    case 2:
+                                        hanbing.add(new Hanbing(glass.get(j).x, glass.get(j).y, 60, 70, hanbings, j));
+                                        break;
+                                    case 3:
+                                        jianguo.add(new Jianguo(glass.get(j).x, glass.get(j).y, 60, 70, jianguos, j));
+                                        break;
+                                }
+                            } else {
+                                GameObject dlcPlant = EntityFactory.createPlant(i, glass.get(j).x, glass.get(j).y, j);
+                                if (dlcPlant != null) {
+                                    dlcPlant.num = j;
+                                    dlcPlants.add(dlcPlant);
+                                }
                             }
                             glass.get(j).live = true;
                             sun -= card.get(i).price;
@@ -976,17 +1033,15 @@ public class GameFrame {
                         }
                     }
                     card.get(i).move = false;
-                    card.get(i).x = cardX[i];
-                    card.get(i).y = cardY + TOOLBAR_Y_BASE;
+                    card.get(i).x = card.get(i).z;
+                    card.get(i).y = card.get(i).w;
                     return;
                 }
             }
 
             // 点击选择植物卡片
-            int cY = cardY + TOOLBAR_Y_BASE;
-            int cH = cY + CARD_H;
             for (int i = 0; i < card.size(); i++) {
-                if (GameUtil.ifRect(e.getX(), e.getY(), cardX[i], cY, cardX[i] + CARD_W, cH)) {
+                if (GameUtil.ifRect(e.getX(), e.getY(), card.get(i).z, card.get(i).w, card.get(i).z + CARD_W, card.get(i).w + CARD_H)) {
                     if (sun >= card.get(i).price && !card.get(i).cool) {
                         card.get(i).move = true;
                         util.playBGM("sounds/plant.wav", 1);
