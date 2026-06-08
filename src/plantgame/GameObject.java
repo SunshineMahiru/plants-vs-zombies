@@ -223,7 +223,7 @@ class Sun extends GameObject {
 	public  Sun(int x,int y,Image imgs[]) {//向日葵生产的阳光
 		this.x=x;this.y=y;//x,y值由向日葵确定
 		this.wide=70;this.high=70;//扩大点击范围
-		this.imgs=imgs;this.max=y;
+		this.imgs=imgs;this.max=y+60;
 		this.count=0;this.start=new Date();
 		this.speedx=(int)((this.x-70)/30);this.speedy=(int)((this.y-45)/30);
 	}
@@ -245,29 +245,24 @@ class Sun extends GameObject {
 				this.count=0;
 			}
 			
-			if(this.move) {//往太阳数字移动
-				if(this.x>=70) {
-					if(this.y>=45) {//终点右下角
-						this.x-=this.speedx;this.y-=this.speedy;//阳光被收取，向着左上角移动
-					}else {//终点右上角
-						this.x-=this.speedx;this.y+=5;
+			if(this.move) {
+				int targetX = 65;
+				int targetY = 40;
+				int dx = targetX - this.x;
+				int dy = targetY - this.y;
+				if(Math.abs(dx)<=4 && Math.abs(dy)<=4) {
+					if(this.live) {
+						GameFrame.sun+=25;
+						this.live=false;
 					}
-				}else if(this.x<70&&this.y>=45) {//终点左下角
-					this.x+=2;this.y-=this.speedy;
 				}else {
-					
+					this.x += Math.max(-12, Math.min(12, dx));
+					this.y += Math.max(-12, Math.min(12, dy));
 				}
-				
-				if(GameUtil.ifRect(this.x, this.y,50,20,80,55)){//太阳到达目的地70,45
-					if(this.live) {GameFrame.sun+=25;this.live=false;}
-				}
-			}else {//阳光未被收取
-				//未降落到最低处
+			}else {
 				if(this.y<this.max) {
-					this.y+=(int)( (this.max-this.y)/100);//阳光掉落速度减半
+					this.y+=Math.max(1,(this.max-this.y)/20);
 				}
-				
-				
 			}
 		}
 	}
@@ -310,6 +305,37 @@ class Flower extends GameObject{
 	}	
 }
 //豌豆射手类
+class PlantAttackUtil {
+	static boolean hasZombieInLane(int plantX,int plantY) {
+		int laneY = plantY + GameFrame.CELL_H / 2;
+		for(int i=0;i<GameFrame.qizhi.size();i++) {
+			QiZhi zombie = GameFrame.qizhi.get(i);
+			if(zombie.live && !zombie.dieing && zombie.hp>0 && zombie.y == laneY && zombie.x + zombie.wide >= plantX) {
+				return true;
+			}
+		}
+		for(int i=0;i<GameFrame.tietong.size();i++) {
+			TieTong zombie = GameFrame.tietong.get(i);
+			if(zombie.live && !zombie.dieing && zombie.hp>0 && zombie.y == laneY && zombie.x + zombie.wide >= plantX) {
+				return true;
+			}
+		}
+		for(int i=0;i<GameFrame.baozhi.size();i++) {
+			BaoZhi zombie = GameFrame.baozhi.get(i);
+			if(zombie.live && !zombie.dieing && zombie.hp>0 && zombie.y == laneY && zombie.x + zombie.wide >= plantX) {
+				return true;
+			}
+		}
+		for(int i=0;i<GameFrame.ganlan.size();i++) {
+			GanLan zombie = GameFrame.ganlan.get(i);
+			if(zombie.live && !zombie.dieing && zombie.hp>0 && zombie.y == laneY && zombie.x + zombie.wide >= plantX) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
 class Wandou extends GameObject{
 	Image imgs[];
 	boolean attack;
@@ -333,34 +359,14 @@ class Wandou extends GameObject{
 		}
 		if(this.live) {
 			this.end=new Date();//用来设置豌豆射手发出子弹的频率-->1.5秒
-			if((this.end.getTime()-this.start.getTime())*0.001>=1.5&&this.count==12) {
-				for(int i=0;i<GameFrame.qizhi.size();i++) {
-					if(GameFrame.qizhi.get(i).y+65==this.y) {
-						this.attack=true;
-					}
-				}
-				for(int i=0;i<GameFrame.tietong.size();i++) {
-					if(GameFrame.tietong.get(i).y+65==this.y) {
-						this.attack=true;
-					}
-				}
-				for(int i=0;i<GameFrame.baozhi.size();i++) {
-					if(GameFrame.baozhi.get(i).y+65==this.y) {
-						this.attack=true;
-					}
-				}
-				for(int i=0;i<GameFrame.ganlan.size();i++) {
-					if(GameFrame.ganlan.get(i).y+65==this.y) {
-						this.attack=true;
-					}
-				}
-				if(this.attack) {
-					GameFrame.util.playBGM("sounds/biu.wav", 1);
-					GameFrame.bullet.add((new Bullet(this.x,this.y,GameFrame.bullets[0], false,10)));
-					this.attack=false;
-				}
+			boolean hasTarget = PlantAttackUtil.hasZombieInLane(this.x,this.y);
+			double shootInterval = (this.end.getTime()-this.start.getTime())*0.001;
+			if(hasTarget && (!this.attack || shootInterval>=1.5)) {
+				GameFrame.util.playBGM("sounds/biu.wav", 1);
+				GameFrame.bullet.add((new Bullet(this.x,this.y,GameFrame.bullets[0], false,10)));
 				this.start=new Date();
 			}//画出豌豆射手
+			this.attack = hasTarget;
 			if(count<imgs.length-1) {
 				g.drawImage(imgs[this.count++],this.x,this.y,null);
 			}else {
@@ -397,34 +403,14 @@ class Hanbing extends GameObject{
 		}
 		if(this.live) {
 					this.end=new Date();//用来设置豌豆射手发出子弹的频率-->1.5秒
-					if((this.end.getTime()-this.start.getTime())*0.001>=1.5&&this.count==7) {
-						for(int i=0;i<GameFrame.qizhi.size();i++) {
-							if(GameFrame.qizhi.get(i).y+65==this.y) {
-								this.attack=true;
-							}
-						}
-						for(int i=0;i<GameFrame.tietong.size();i++) {
-							if(GameFrame.tietong.get(i).y+65==this.y) {
-								this.attack=true;
-							}
-						}
-						for(int i=0;i<GameFrame.baozhi.size();i++) {
-							if(GameFrame.baozhi.get(i).y+65==this.y) {
-								this.attack=true;
-							}
-						}
-						for(int i=0;i<GameFrame.ganlan.size();i++) {
-							if(GameFrame.ganlan.get(i).y+65==this.y) {
-								this.attack=true;
-							}
-						}
-						if(this.attack) {
-							GameFrame.util.playBGM("sounds/biu.wav", 1);
-							GameFrame.bullet.add((new Bullet(this.x,this.y,GameFrame.bullets[1], true,5)));
-							this.attack=false;
-						}
+					boolean hasTarget = PlantAttackUtil.hasZombieInLane(this.x,this.y);
+					double shootInterval = (this.end.getTime()-this.start.getTime())*0.001;
+					if(hasTarget && (!this.attack || shootInterval>=1.5)) {
+						GameFrame.util.playBGM("sounds/biu.wav", 1);
+						GameFrame.bullet.add((new Bullet(this.x,this.y,GameFrame.bullets[1], true,5)));
 						this.start=new Date();}
 					//画出豌豆射手
+					this.attack = hasTarget;
 					if(count<imgs.length-1) {
 						g.drawImage(imgs[this.count++],this.x,this.y,null);
 						}else {

@@ -27,6 +27,8 @@ public class GameFrame {
     public static final int CELL_H = 98;           // 网格高度（5行均匀分布：(570-80)/5≈98）
     public static final int LAWN_ROWS = 5;
     public static final int LAWN_COLS = 9;
+    public static final int CAR_W = 70;
+    public static final int CAR_H = 57;
 
     // 每行草坪的Y中心坐标（基于back0.png亮度分析）
     public static final int[] ROW_CENTER_Y = {124, 222, 325, 420, 520};
@@ -89,12 +91,14 @@ public class GameFrame {
     static Image tietongs[];
     static Image ganlans[];
     static Image baozhis[];
+    static Image lawnMowerImg;
     static int sun;
     static int num;           // 已消灭僵尸数
     static Date startTime;
     static Date stopTime;
     static Date start;
     static Date stop;
+    static int lastSkySunSecond;
     static Sun suning;
 
     // ========== 初始化 ==========
@@ -111,6 +115,7 @@ public class GameFrame {
         sun = 50;
         loadtime = 0;
         op = 2;
+        lastSkySunSecond = -1;
         live = false;
         util = new GameUtil();
         util.loadBGM("sounds/bgm8.wav");
@@ -125,6 +130,7 @@ public class GameFrame {
         tietongs = new Image[239];
         ganlans = new Image[239];
         baozhis = new Image[235];
+        lawnMowerImg = GameUtil.getImage("GameFrame/LawnMower.gif");
 
         for (int i = 0; i < img.length; i++) {
             img[i] = GameUtil.getImage("GameFrame/back" + i + ".png");
@@ -158,9 +164,7 @@ public class GameFrame {
 
         // 初始化小推车（放在房子门前石板上，每行一个）
         // 石板区域 x≈140-240，小推车放在 x=200 附近
-        for (int i = 0; i < LAWN_ROWS; i++) {
-            car.add(new Car(200, ROW_CENTER_Y[i] - 15, 46, 64, 8, img[4]));
-        }
+        createLawnMowers();
 
         // 初始化铲子
         double sc = TOOLBAR_SCALE;
@@ -172,11 +176,11 @@ public class GameFrame {
 
         // 初始化卡片
         card.add(new Card(cardX[0], cardY + TOOLBAR_Y_BASE,
-            CARD_W, CARD_H, 25, IntroAnimation.cardImages[0], img[13]));
+            CARD_W, CARD_H, 50, IntroAnimation.cardImages[0], img[13]));
         card.add(new Card(cardX[1], cardY + TOOLBAR_Y_BASE,
             CARD_W, CARD_H, 100, IntroAnimation.cardImages[1], img[15]));
         card.add(new Card(cardX[2], cardY + TOOLBAR_Y_BASE,
-            CARD_W, CARD_H, 150, IntroAnimation.cardImages[2], img[17]));
+            CARD_W, CARD_H, 175, IntroAnimation.cardImages[2], img[17]));
         card.add(new Card(cardX[3], cardY + TOOLBAR_Y_BASE,
             CARD_W, CARD_H, 50, IntroAnimation.cardImages[3], img[19]));
     }
@@ -234,6 +238,12 @@ public class GameFrame {
     }
 
     // ========== 主绘制方法 ==========
+    public static void createLawnMowers() {
+        for (int i = 0; i < LAWN_ROWS; i++) {
+            car.add(new Car(200, ROW_CENTER_Y[i] - CAR_H / 2, CAR_W, CAR_H, 8, lawnMowerImg));
+        }
+    }
+
     public static void draw(Graphics g) {
         Font font = g.getFont();
         g.setFont(new Font("微软雅黑", Font.BOLD + Font.ITALIC, 25));
@@ -263,7 +273,9 @@ public class GameFrame {
         } else if (loadtime == 2) {
             // ========== 游戏进行中 ==========
             // 天空阳光
-            if ((int)((stopTime.getTime() - startTime.getTime()) * 0.001) % 7 == 0) {
+            int elapsedSeconds = (int)((stopTime.getTime() - startTime.getTime()) * 0.001);
+            if (elapsedSeconds > 0 && elapsedSeconds % 7 == 0 && elapsedSeconds != lastSkySunSecond) {
+                lastSkySunSecond = elapsedSeconds;
                 suning = new Sun((int)(Math.random() * 500) + 200, 50, 50, (int)(Math.random() * 350) + 200, suns);
                 suning.live = true;
                 suning.move = false;
@@ -700,11 +712,10 @@ public class GameFrame {
         for (int i = 0; i < glass.size(); i++) {
             glass.get(i).live = false;
         }
-        for (int i = 0; i < LAWN_ROWS; i++) {
-            car.add(new Car(200, LAWN_START_Y + CELL_H * i + 15, 46, 64, 8, img[4]));
-        }
+        createLawnMowers();
         startTime = new Date();
         start = new Date();
+        lastSkySunSecond = -1;
         num = 0;
         cameraX = CAMERA_DEFAULT;
         util.playBGM();
