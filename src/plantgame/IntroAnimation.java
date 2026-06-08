@@ -46,9 +46,9 @@ public class IntroAnimation {
     public static final int LAWN_OFFSET = 170;
     
     // 工具栏缩放参数
-    // toolbar.png原始712x102，缩放到约70%屏幕宽度(560px)
+    // 7.png原始981x102，沿用原缩放比例，仅增加显示长度
     public static final double TOOLBAR_SCALE = 560.0 / 712.0; // ≈0.787
-    public static final int TOOLBAR_W = (int)(712 * TOOLBAR_SCALE); // 560
+    public static final int TOOLBAR_W = (int)(981 * TOOLBAR_SCALE); // 771
     public static final int TOOLBAR_H = (int)(102 * TOOLBAR_SCALE); // 80
     public static final int TOOLBAR_X = 10; // 左侧留一点间距
     public static final int TOOLBAR_Y_BASE = 0; // 工具栏顶部y位置
@@ -84,8 +84,10 @@ public class IntroAnimation {
     public static Image[] readyImages = new Image[3];
     public static int currentReadyIndex = 0;
     
-    // 僵尸动画
-    public static Image[] zombieWalkFrames;
+    // 僵尸预览动画
+    public static Image[][] zombieWalkFrames;
+    public static final int[] zombieWalkFrameCounts = {48, 48, 47, 48};
+    public static final int[] zombieBodyHeights = {60, 60, 70, 60};
     public static ArrayList<int[]> zombies = new ArrayList<>();
     
     // 音效播放标记
@@ -105,11 +107,20 @@ public class IntroAnimation {
             return 1 - (-2 * t + 2) * (-2 * t + 2) / 2;
         }
     }
+
+    public static void shuffleArray(int[] values) {
+        for (int i = values.length - 1; i > 0; i--) {
+            int j = (int)(Math.random() * (i + 1));
+            int temp = values[i];
+            values[i] = values[j];
+            values[j] = temp;
+        }
+    }
     
     // 初始化资源
     static {
         bgImage = GameUtil.getImage("GameFrame/back0.png");
-        toolbarImg = GameUtil.getImage("IntroAnimation/toolbar.png");
+        toolbarImg = GameUtil.getImage("fresh/7.png");
         shovelImg = GameUtil.getImage("IntroAnimation/shovel.png");
         
         cardImages[0] = GameUtil.getImage("IntroAnimation/card_1.png");
@@ -121,9 +132,22 @@ public class IntroAnimation {
         readyImages[1] = GameUtil.getImage("IntroAnimation/readySetPlant2.png");
         readyImages[2] = GameUtil.getImage("IntroAnimation/readySetPlant3.png");
         
-        zombieWalkFrames = new Image[48];
-        for (int i = 0; i < 48; i++) {
-            zombieWalkFrames[i] = GameUtil.getImage("Zombies/qizhi/qizhi (" + (i + 1) + ").png");
+        zombieWalkFrames = new Image[4][];
+        zombieWalkFrames[0] = new Image[zombieWalkFrameCounts[0]];
+        zombieWalkFrames[1] = new Image[zombieWalkFrameCounts[1]];
+        zombieWalkFrames[2] = new Image[zombieWalkFrameCounts[2]];
+        zombieWalkFrames[3] = new Image[zombieWalkFrameCounts[3]];
+        for (int i = 0; i < zombieWalkFrameCounts[0]; i++) {
+            zombieWalkFrames[0][i] = GameUtil.getImage("Zombies/qizhi/qizhi (" + (i + 1) + ").png");
+        }
+        for (int i = 0; i < zombieWalkFrameCounts[1]; i++) {
+            zombieWalkFrames[1][i] = GameUtil.getImage("Zombies/tietong/tietong (" + (i + 1) + ").png");
+        }
+        for (int i = 0; i < zombieWalkFrameCounts[2]; i++) {
+            zombieWalkFrames[2][i] = GameUtil.getImage("Zombies/baozhi/baozhi (" + (i + 1) + ").png");
+        }
+        for (int i = 0; i < zombieWalkFrameCounts[3]; i++) {
+            zombieWalkFrames[3][i] = GameUtil.getImage("Zombies/ganlan/ganlan (" + (i + 1) + ").png");
         }
     }
     
@@ -145,9 +169,30 @@ public class IntroAnimation {
         readySoundPlayed = false;
         bgmVolumeRestored = false;
         zombies.clear();
-        
-        for (int i = 0; i < 5; i++) {
-            zombies.add(new int[]{(int)(Math.random() * 5) * 100 + 80, 0});
+
+        int previewCount = 5 + (int)(Math.random() * 3); // 5 to 7
+        int[] rows = {0, 1, 2, 3, 4};
+        int[] types = {0, 1, 2, 3};
+        int[] xSlots = {1030, 1090, 1150, 1210, 1270};
+        shuffleArray(rows);
+        shuffleArray(types);
+        shuffleArray(xSlots);
+
+        for (int i = 0; i < 4; i++) {
+            int type = types[i];
+            int row = rows[i];
+            int bgX = xSlots[i] + (int)(Math.random() * 21) - 10;
+            int spriteY = GameFrame.getZombieSpriteY(row, zombieBodyHeights[type]);
+            zombies.add(new int[]{spriteY, 0, type, bgX});
+        }
+
+        for (int i = 4; i < previewCount; i++) {
+            int extraType = (int)(Math.random() * zombieWalkFrames.length);
+            int extraRow = rows[i % rows.length];
+            int[] extraSlots = {1010, 1070, 1130, 1190, 1250, 1310, 1370};
+            int extraX = extraSlots[i] + (int)(Math.random() * 21) - 10;
+            int extraY = GameFrame.getZombieSpriteY(extraRow, zombieBodyHeights[extraType]);
+            zombies.add(new int[]{extraY, 0, extraType, extraX});
         }
     }
     
@@ -179,6 +224,7 @@ public class IntroAnimation {
                 }
                 cameraX = cameraStartX + (cameraTargetX - cameraStartX) * smootherStep(progress);
                 drawBackground(g);
+                drawZombies(g);
                 break;
                 
             case STATE_SHOW_ZOMBIES:
@@ -308,12 +354,14 @@ public class IntroAnimation {
             int[] z = zombies.get(i);
             int y = z[0];
             int frame = z[1];
-            int zombieX = (int)Math.round(1100 - cameraX);
+            int type = z[2];
+            int zombieX = (int)Math.round(z[3] - cameraX);
             if (zombieX > -50 && zombieX < screenWidth + 50) {
-                if (zombieWalkFrames != null && frame < zombieWalkFrames.length) {
-                    g.drawImage(zombieWalkFrames[frame], zombieX, y + 30, null);
+                Image[] frames = zombieWalkFrames[type];
+                if (frames != null && frame < frames.length) {
+                    g.drawImage(frames[frame], zombieX, y, null);
                 }
-                z[1] = (z[1] + 1) % 48;
+                z[1] = (z[1] + 1) % zombieWalkFrameCounts[type];
             }
         }
     }

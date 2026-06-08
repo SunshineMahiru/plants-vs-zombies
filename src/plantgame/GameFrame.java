@@ -2,6 +2,7 @@ package plantgame;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +33,13 @@ public class GameFrame {
 
     // 每行草坪的Y中心坐标（基于back0.png亮度分析）
     public static final int[] ROW_CENTER_Y = {124, 222, 325, 420, 520};
+    public static final int[] ROW_TOP_Y = {
+        ROW_CENTER_Y[0] - CELL_H / 2,
+        ROW_CENTER_Y[1] - CELL_H / 2,
+        ROW_CENTER_Y[2] - CELL_H / 2,
+        ROW_CENTER_Y[3] - CELL_H / 2,
+        ROW_CENTER_Y[4] - CELL_H / 2
+    };
 
     // 镜头参数
     public static double cameraX = 0;              // 镜头左边界在背景中的x坐标
@@ -43,12 +51,22 @@ public class GameFrame {
 
     // 工具栏参数
     public static final double TOOLBAR_SCALE = 560.0 / 712.0;
-    public static final int TOOLBAR_W = (int)(712 * TOOLBAR_SCALE);
+    public static final int TOOLBAR_W = (int)(981 * TOOLBAR_SCALE);
     public static final int TOOLBAR_H = (int)(102 * TOOLBAR_SCALE);
     public static final int TOOLBAR_X = 10;
     public static final int TOOLBAR_Y_BASE = 0;    // 工具栏在屏幕顶部
     public static final int CARD_W = (int)(64 * TOOLBAR_SCALE);
     public static final int CARD_H = (int)(90 * TOOLBAR_SCALE);
+    public static final int TOOL_SLOT_Y_RAW = 5;
+    public static final int TOOL_SLOT_W_RAW = 80;
+    public static final int TOOL_SLOT_H_RAW = 90;
+    public static final int SHOVEL_SLOT_X_RAW = 625;
+    public static final int HAMMER_SLOT_X_RAW = 714;
+    public static final int GLOVE_SLOT_X_RAW = 803;
+    public static final int PLANT_TYPE_FLOWER = 0;
+    public static final int PLANT_TYPE_WANDOU = 1;
+    public static final int PLANT_TYPE_HANBING = 2;
+    public static final int PLANT_TYPE_JIANGUO = 3;
     public static int[] cardX = {
         (int)(86 * TOOLBAR_SCALE) + TOOLBAR_X,
         (int)(152 * TOOLBAR_SCALE) + TOOLBAR_X,
@@ -72,6 +90,8 @@ public class GameFrame {
     static ArrayList<BaoZhi> baozhi = new ArrayList<>();
     static ArrayList<GanLan> ganlan = new ArrayList<>();
     static Shove shove;
+    static Hammer hammer;
+    static Glove glove;
 
     // ========== 游戏状态 ==========
     static boolean backgame, backmenu, restart;
@@ -92,6 +112,9 @@ public class GameFrame {
     static Image ganlans[];
     static Image baozhis[];
     static Image lawnMowerImg;
+    static Image shovelImg;
+    static Image hammerImg;
+    static Image gloveImg;
     static int sun;
     static int num;           // 已消灭僵尸数
     static Date startTime;
@@ -100,6 +123,11 @@ public class GameFrame {
     static Date stop;
     static int lastSkySunSecond;
     static Sun suning;
+    static GameObject carriedPlant;
+    static int carriedPlantType = -1;
+    static int carriedPlantOriginalX;
+    static int carriedPlantOriginalY;
+    static int carriedPlantOriginalNum;
 
     // ========== 初始化 ==========
     static {
@@ -107,7 +135,7 @@ public class GameFrame {
         // 每个格子的位置：x = LAWN_START_X + CELL_W * j, y = ROW_CENTER_Y[i] - CELL_H/2
         for (int i = 0; i < LAWN_ROWS; i++) {
             for (int j = 0; j < LAWN_COLS; j++) {
-                glass.add(new Glass(LAWN_START_X + CELL_W * j, ROW_CENTER_Y[i] - CELL_H / 2));
+                glass.add(new Glass(LAWN_START_X + CELL_W * j, ROW_TOP_Y[i]));
             }
         }
 
@@ -161,6 +189,9 @@ public class GameFrame {
         for (int i = 0; i < baozhis.length; i++) {
             baozhis[i] = GameUtil.getImage("Zombies/baozhi/baozhi (" + (i + 1) + ").png");
         }
+        shovelImg = GameUtil.getImage("IntroAnimation/shovel.png");
+        hammerImg = GameUtil.getImage("fresh/8.png");
+        gloveImg = GameUtil.getImage("fresh/4.png");
 
         // 初始化小推车（放在房子门前石板上，每行一个）
         // 石板区域 x≈140-240，小推车放在 x=200 附近
@@ -172,7 +203,11 @@ public class GameFrame {
         int shovelY = (int)(10 * sc) + TOOLBAR_Y_BASE;
         int shovelW = (int)(80 * sc);
         int shovelH = (int)(80 * sc);
-        shove = new Shove(shovelX, shovelY, shovelW, shovelH, 0, img[5]);
+        shove = new Shove(shovelX, shovelY, shovelW, shovelH, 0, shovelImg);
+        int hammerX = (int)(720 * sc) + TOOLBAR_X;
+        hammer = new Hammer(hammerX, shovelY, shovelW, shovelH, 0, hammerImg);
+        int gloveX = (int)(810 * sc) + TOOLBAR_X;
+        glove = new Glove(gloveX, shovelY, shovelW, shovelH, 0, gloveImg);
 
         // 初始化卡片
         card.add(new Card(cardX[0], cardY + TOOLBAR_Y_BASE,
@@ -220,6 +255,8 @@ public class GameFrame {
                 TOOLBAR_X + TOOLBAR_W, TOOLBAR_Y_BASE + TOOLBAR_H,
                 0, 0, IntroAnimation.toolbarImg.getWidth(null), IntroAnimation.toolbarImg.getHeight(null), null);
         }
+        drawHammerCooldown(g);
+        drawGloveCooldown(g);
         // 阳光数值
         Font font = g.getFont();
         g.setFont(new Font("微软雅黑", Font.BOLD + Font.ITALIC, 25));
@@ -237,10 +274,203 @@ public class GameFrame {
         g.setFont(font);
     }
 
+    public static void drawHammerCooldown(Graphics g) {
+        if (hammer == null || !hammer.cool) {
+            return;
+        }
+        g.setColor(new java.awt.Color(0, 0, 0, 120));
+        g.fillRect(hammer.slotX, hammer.slotY, hammer.wide, hammer.high);
+        int remain = 60 - (int)((hammer.stop_time.getTime() - hammer.start_time.getTime()) * 0.001);
+        if (remain < 0) {
+            remain = 0;
+        }
+        Font oldFont = g.getFont();
+        g.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        String text = remain + "s";
+        java.awt.FontMetrics fm = g.getFontMetrics();
+        int textX = hammer.slotX + (hammer.wide - fm.stringWidth(text)) / 2;
+        int textY = hammer.slotY + (hammer.high + fm.getAscent()) / 2 - 4;
+        g.setColor(java.awt.Color.WHITE);
+        g.drawString(text, textX, textY);
+        g.setFont(oldFont);
+    }
+
+    public static void drawGloveCooldown(Graphics g) {
+        if (glove == null || !glove.cool) {
+            return;
+        }
+        g.setColor(new java.awt.Color(0, 0, 0, 120));
+        g.fillRect(glove.slotX, glove.slotY, glove.wide, glove.high);
+        int remain = 15 - (int)((glove.stop_time.getTime() - glove.start_time.getTime()) * 0.001);
+        if (remain < 0) {
+            remain = 0;
+        }
+        Font oldFont = g.getFont();
+        g.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        String text = remain + "s";
+        java.awt.FontMetrics fm = g.getFontMetrics();
+        int textX = glove.slotX + (glove.wide - fm.stringWidth(text)) / 2;
+        int textY = glove.slotY + (glove.high + fm.getAscent()) / 2 - 4;
+        g.setColor(java.awt.Color.WHITE);
+        g.drawString(text, textX, textY);
+        g.setFont(oldFont);
+    }
+
+    public static void startCarryPlant(GameObject plant, int plantType) {
+        carriedPlant = plant;
+        carriedPlantType = plantType;
+        carriedPlantOriginalX = plant.x;
+        carriedPlantOriginalY = plant.y;
+        carriedPlantOriginalNum = plant.num;
+        glass.get(plant.num).live = false;
+    }
+
+    public static void cancelCarriedPlant() {
+        if (carriedPlant != null) {
+            carriedPlant.x = carriedPlantOriginalX;
+            carriedPlant.y = carriedPlantOriginalY;
+            carriedPlant.num = carriedPlantOriginalNum;
+            glass.get(carriedPlantOriginalNum).live = true;
+        }
+        carriedPlant = null;
+        carriedPlantType = -1;
+    }
+
+    public static boolean placeCarriedPlant(int bgX, int bgY) {
+        if (carriedPlant == null) {
+            return false;
+        }
+        for (int j = 0; j < glass.size(); j++) {
+            if (!glass.get(j).live && GameUtil.ifRect(bgX, bgY,
+                glass.get(j).x, glass.get(j).y,
+                glass.get(j).x + glass.get(j).wide,
+                glass.get(j).y + glass.get(j).high)) {
+                carriedPlant.x = glass.get(j).x;
+                carriedPlant.y = glass.get(j).y;
+                carriedPlant.num = j;
+                glass.get(j).live = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ========== 主绘制方法 ==========
     public static void createLawnMowers() {
         for (int i = 0; i < LAWN_ROWS; i++) {
             car.add(new Car(200, ROW_CENTER_Y[i] - CAR_H / 2, CAR_W, CAR_H, 8, lawnMowerImg));
+        }
+    }
+
+    public static int getVisibleRightX() {
+        return screenToBgX(SCREEN_W);
+    }
+
+    public static int getZombieSpriteY(int row, int bodyHeight) {
+        return ROW_CENTER_Y[row] - (50 + bodyHeight / 2);
+    }
+
+    public static int getGridRow(int y) {
+        for (int row = 0; row < LAWN_ROWS; row++) {
+            if (y >= ROW_TOP_Y[row] && y < ROW_TOP_Y[row] + CELL_H) {
+                return row;
+            }
+        }
+        return -1;
+    }
+
+    public static int getGridCol(int bgX) {
+        if (bgX < LAWN_START_X || bgX >= LAWN_START_X + LAWN_COLS * CELL_W) {
+            return -1;
+        }
+        return (bgX - LAWN_START_X) / CELL_W;
+    }
+
+    public static boolean isZombieInHammerRange(Rectangle rect, int centerRow, int centerCol) {
+        int zombieRow = getGridRow(rect.y + rect.height / 2);
+        int zombieCol = getGridCol(rect.x + rect.width / 2);
+        return zombieRow != -1 && zombieCol != -1
+            && Math.abs(zombieRow - centerRow) <= 1
+            && Math.abs(zombieCol - centerCol) <= 1;
+    }
+
+    public static void killZombie(QiZhi zombie) {
+        if (!zombie.live || zombie.dieing) {
+            return;
+        }
+        zombie.hp = 0;
+        zombie.moving = false;
+        zombie.attacking = false;
+        zombie.dieing = true;
+        zombie.count = 88;
+    }
+
+    public static void killZombie(TieTong zombie) {
+        if (!zombie.live || zombie.dieing) {
+            return;
+        }
+        zombie.hp = 0;
+        zombie.moving = false;
+        zombie.attacking = false;
+        zombie.dieing = true;
+        zombie.count = 191;
+    }
+
+    public static void killZombie(BaoZhi zombie) {
+        if (!zombie.live || zombie.dieing) {
+            return;
+        }
+        zombie.hp = 0;
+        zombie.moving = false;
+        zombie.attacking = false;
+        zombie.dieing = true;
+        zombie.count = 187;
+    }
+
+    public static void killZombie(GanLan zombie) {
+        if (!zombie.live || zombie.dieing) {
+            return;
+        }
+        zombie.hp = 0;
+        zombie.moving = false;
+        zombie.attacking = false;
+        zombie.dieing = true;
+        zombie.count = 192;
+    }
+
+    public static void useHammer(int centerRow, int centerCol) {
+        for (int i = 0; i < qizhi.size(); i++) {
+            if (isZombieInHammerRange(qizhi.get(i).getRect(), centerRow, centerCol)) {
+                killZombie(qizhi.get(i));
+            }
+        }
+        for (int i = 0; i < tietong.size(); i++) {
+            if (isZombieInHammerRange(tietong.get(i).getRect(), centerRow, centerCol)) {
+                killZombie(tietong.get(i));
+            }
+        }
+        for (int i = 0; i < baozhi.size(); i++) {
+            if (isZombieInHammerRange(baozhi.get(i).getRect(), centerRow, centerCol)) {
+                killZombie(baozhi.get(i));
+            }
+        }
+        for (int i = 0; i < ganlan.size(); i++) {
+            if (isZombieInHammerRange(ganlan.get(i).getRect(), centerRow, centerCol)) {
+                killZombie(ganlan.get(i));
+            }
+        }
+    }
+
+    public static void spawnRandomZombie(int row) {
+        int type = (int)(Math.random() * 16);
+        if (type < 5) {
+            qizhi.add(new QiZhi(qizhis, getZombieSpriteY(row, 60), 1, 20, 100));
+        } else if (type < 11) {
+            tietong.add(new TieTong(tietongs, getZombieSpriteY(row, 60), 0.8, 15, 200));
+        } else if (type < 14) {
+            baozhi.add(new BaoZhi(baozhis, getZombieSpriteY(row, 70), 0.8, 15, 200));
+        } else {
+            ganlan.add(new GanLan(ganlans, getZombieSpriteY(row, 60), 0.8, 15, 200));
         }
     }
 
@@ -380,6 +610,8 @@ public class GameFrame {
                 card.get(i).drawSelf(g);
             }
             shove.drawSelf(g);
+            hammer.drawSelf(g);
+            glove.drawSelf(g);
 
             g.setFont(font);
 
@@ -389,55 +621,28 @@ public class GameFrame {
                 if (num >= 0 && num <= 5) {
                     if ((int)((stop.getTime() - start.getTime()) * 0.001) >= ((int)(Math.random() * 5) + 20)) {
                         int row = (int)(Math.random() * 5);
-                        qizhi.add(new QiZhi(qizhis, ROW_CENTER_Y[row], 0.6, 10, 100));
+                        spawnRandomZombie(row);
                         start = new Date();
                     }
                 } else if (num > 5 && num <= 25) {
                     if ((int)((stop.getTime() - start.getTime()) * 0.001) >= ((int)(Math.random() * 5) + 15)) {
-                        int x = (int)(Math.random() * 16);
                         int row = (int)(Math.random() * 5);
-                        if (x < 5) {
-                            qizhi.add(new QiZhi(qizhis, ROW_CENTER_Y[row], 1, 20, 100));
-                        } else if (x < 11) {
-                            tietong.add(new TieTong(tietongs, ROW_CENTER_Y[row], 0.8, 15, 200));
-                        } else if (x < 14) {
-                            baozhi.add(new BaoZhi(baozhis, ROW_CENTER_Y[row], 0.8, 15, 200));
-                        } else {
-                            ganlan.add(new GanLan(ganlans, ROW_CENTER_Y[row], 0.8, 15, 200));
-                        }
+                        spawnRandomZombie(row);
                         start = new Date();
                     }
                 } else if (num > 25 && num <= 50) {
                     if ((int)((stop.getTime() - start.getTime()) * 0.001) >= ((int)(Math.random() * 5) + 10)) {
                         for (int i = 0; i < 2; i++) {
-                            int x = (int)(Math.random() * 16);
                             int row = (int)(Math.random() * 5);
-                            if (x < 4) {
-                                qizhi.add(new QiZhi(qizhis, ROW_CENTER_Y[row], 1, 20, 100));
-                            } else if (x < 11) {
-                                tietong.add(new TieTong(tietongs, ROW_CENTER_Y[row], 0.8, 15, 200));
-                            } else if (x < 14) {
-                                baozhi.add(new BaoZhi(baozhis, ROW_CENTER_Y[row], 0.8, 15, 200));
-                            } else {
-                                ganlan.add(new GanLan(ganlans, ROW_CENTER_Y[row], 0.8, 15, 200));
-                            }
+                            spawnRandomZombie(row);
                         }
                         start = new Date();
                     }
                 } else if (num > 50) {
                     if ((int)((stop.getTime() - start.getTime()) * 0.001) >= 10 + ((int)(Math.random() * 5))) {
                         for (int i = 0; i < 2; i++) {
-                            int x = (int)(Math.random() * 16);
                             int row = (int)(Math.random() * 5);
-                            if (x < 3) {
-                                qizhi.add(new QiZhi(qizhis, ROW_CENTER_Y[row], 1, 20, 100));
-                            } else if (x < 9) {
-                                tietong.add(new TieTong(tietongs, ROW_CENTER_Y[row], 0.8, 15, 200));
-                            } else if (x < 14) {
-                                baozhi.add(new BaoZhi(baozhis, ROW_CENTER_Y[row], 0.8, 15, 200));
-                            } else {
-                                ganlan.add(new GanLan(ganlans, ROW_CENTER_Y[row], 0.8, 15, 200));
-                            }
+                            spawnRandomZombie(row);
                         }
                         start = new Date();
                     }
@@ -450,6 +655,14 @@ public class GameFrame {
                 if ((card.get(i).stop_time.getTime() - card.get(i).start_time.getTime()) * 0.001 > 7.5) {
                     card.get(i).cool = false;
                 }
+            }
+            hammer.stop_time = new Date();
+            if ((hammer.stop_time.getTime() - hammer.start_time.getTime()) * 0.001 >= 60) {
+                hammer.cool = false;
+            }
+            glove.stop_time = new Date();
+            if ((glove.stop_time.getTime() - glove.start_time.getTime()) * 0.001 >= 15) {
+                glove.cool = false;
             }
 
             // ========== 向日葵产阳光 ==========
@@ -510,6 +723,17 @@ public class GameFrame {
             shove.x = (int)(630 * TOOLBAR_SCALE) + TOOLBAR_X;
             shove.y = (int)(10 * TOOLBAR_SCALE) + TOOLBAR_Y_BASE;
         }
+        if (hammer.move) {
+            hammer.move = false;
+            hammer.resetPosition();
+        }
+        if (glove.move) {
+            glove.move = false;
+            glove.resetPosition();
+        }
+        if (carriedPlant != null) {
+            cancelCarriedPlant();
+        }
     }
 
     // ========== 鼠标移动事件 ==========
@@ -519,6 +743,18 @@ public class GameFrame {
             if (shove.move) {
                 shove.x = e.getX() - shove.wide / 2;
                 shove.y = e.getY() - shove.high / 2;
+            }
+            if (hammer.move) {
+                hammer.x = e.getX() - hammer.wide / 2;
+                hammer.y = e.getY() - hammer.high / 2;
+            }
+            if (glove.move) {
+                glove.x = e.getX() - glove.wide / 2;
+                glove.y = e.getY() - glove.high / 2;
+            }
+            if (carriedPlant != null) {
+                carriedPlant.x = screenToBgX(e.getX()) - carriedPlant.wide / 2;
+                carriedPlant.y = e.getY() - carriedPlant.high / 2;
             }
             // 卡片跟随鼠标
             for (int i = 0; i < card.size(); i++) {
@@ -545,13 +781,46 @@ public class GameFrame {
     // ========== 鼠标点击事件 ==========
     public static void MouseClick(MouseEvent e) {
         if (loadtime == 2) {
-            // 点击铲子区域暂停
+            // 点击铲子区域进入铲除模式
             if (GameUtil.ifRect(e.getX(), e.getY(),
                 (int)(625 * TOOLBAR_SCALE) + TOOLBAR_X,
                 (int)(5 * TOOLBAR_SCALE) + TOOLBAR_Y_BASE,
                 (int)(625 * TOOLBAR_SCALE) + TOOLBAR_X + (int)(80 * TOOLBAR_SCALE),
                 (int)(5 * TOOLBAR_SCALE) + TOOLBAR_Y_BASE + (int)(90 * TOOLBAR_SCALE))) {
-                loadtime = 3;
+                cancelSelect();
+                shove.move = true;
+                shove.x = e.getX() - shove.wide / 2;
+                shove.y = e.getY() - shove.high / 2;
+                return;
+            }
+
+            // 点击锤子区域进入技能模式
+            if (GameUtil.ifRect(e.getX(), e.getY(),
+                (int)(HAMMER_SLOT_X_RAW * TOOLBAR_SCALE) + TOOLBAR_X,
+                (int)(TOOL_SLOT_Y_RAW * TOOLBAR_SCALE) + TOOLBAR_Y_BASE,
+                (int)(HAMMER_SLOT_X_RAW * TOOLBAR_SCALE) + TOOLBAR_X + (int)(TOOL_SLOT_W_RAW * TOOLBAR_SCALE),
+                (int)(TOOL_SLOT_Y_RAW * TOOLBAR_SCALE) + TOOLBAR_Y_BASE + (int)(TOOL_SLOT_H_RAW * TOOLBAR_SCALE))) {
+                if (!hammer.cool) {
+                    cancelSelect();
+                    hammer.move = true;
+                    hammer.x = e.getX() - hammer.wide / 2;
+                    hammer.y = e.getY() - hammer.high / 2;
+                }
+                return;
+            }
+
+            // 点击手套区域进入技能模式
+            if (GameUtil.ifRect(e.getX(), e.getY(),
+                (int)(GLOVE_SLOT_X_RAW * TOOLBAR_SCALE) + TOOLBAR_X,
+                (int)(TOOL_SLOT_Y_RAW * TOOLBAR_SCALE) + TOOLBAR_Y_BASE,
+                (int)(GLOVE_SLOT_X_RAW * TOOLBAR_SCALE) + TOOLBAR_X + (int)(TOOL_SLOT_W_RAW * TOOLBAR_SCALE),
+                (int)(TOOL_SLOT_Y_RAW * TOOLBAR_SCALE) + TOOLBAR_Y_BASE + (int)(TOOL_SLOT_H_RAW * TOOLBAR_SCALE))) {
+                if (!glove.cool && carriedPlant == null) {
+                    cancelSelect();
+                    glove.move = true;
+                    glove.x = e.getX() - glove.wide / 2;
+                    glove.y = e.getY() - glove.high / 2;
+                }
                 return;
             }
 
@@ -565,6 +834,7 @@ public class GameFrame {
                         util.playBGM("sounds/plant.wav", 1);
                         glass.get(flower.get(i).num).live = false;
                         flower.get(i).live = false;
+                        shove.move = false;
                         break;
                     }
                 }
@@ -574,6 +844,7 @@ public class GameFrame {
                         util.playBGM("sounds/plant.wav", 1);
                         glass.get(wandou.get(i).num).live = false;
                         wandou.get(i).live = false;
+                        shove.move = false;
                         break;
                     }
                 }
@@ -583,6 +854,7 @@ public class GameFrame {
                         util.playBGM("sounds/plant.wav", 1);
                         glass.get(hanbing.get(i).num).live = false;
                         hanbing.get(i).live = false;
+                        shove.move = false;
                         break;
                     }
                 }
@@ -592,8 +864,81 @@ public class GameFrame {
                         util.playBGM("sounds/plant.wav", 1);
                         glass.get(jianguo.get(i).num).live = false;
                         jianguo.get(i).live = false;
+                        shove.move = false;
                         break;
                     }
+                }
+                return;
+            }
+
+            // 锤子拖动中点击：清除目标格及周围一圈九宫格内的僵尸
+            if (hammer.move) {
+                int bgX = screenToBgX(e.getX());
+                int bgY = e.getY();
+                int row = getGridRow(bgY);
+                int col = getGridCol(bgX);
+                if (row != -1 && col != -1) {
+                    useHammer(row, col);
+                    util.playBGM("sounds/plant.wav", 1);
+                    hammer.move = false;
+                    hammer.cool = true;
+                    hammer.start_time = new Date();
+                    hammer.stop_time = hammer.start_time;
+                    hammer.resetPosition();
+                }
+                return;
+            }
+
+            // 手套点击：先拿起植物，再放到空地块
+            if (glove.move || carriedPlant != null) {
+                int bgX = screenToBgX(e.getX());
+                int bgY = e.getY();
+                if (carriedPlant == null) {
+                    for (int i = 0; i < flower.size(); i++) {
+                        if (GameUtil.ifRect(bgX, bgY, flower.get(i).x, flower.get(i).y,
+                            flower.get(i).x + flower.get(i).wide, flower.get(i).y + flower.get(i).high)) {
+                            startCarryPlant(flower.get(i), PLANT_TYPE_FLOWER);
+                            glove.move = false;
+                            util.playBGM("sounds/plant.wav", 1);
+                            return;
+                        }
+                    }
+                    for (int i = 0; i < wandou.size(); i++) {
+                        if (GameUtil.ifRect(bgX, bgY, wandou.get(i).x, wandou.get(i).y,
+                            wandou.get(i).x + wandou.get(i).wide, wandou.get(i).y + wandou.get(i).high)) {
+                            startCarryPlant(wandou.get(i), PLANT_TYPE_WANDOU);
+                            glove.move = false;
+                            util.playBGM("sounds/plant.wav", 1);
+                            return;
+                        }
+                    }
+                    for (int i = 0; i < hanbing.size(); i++) {
+                        if (GameUtil.ifRect(bgX, bgY, hanbing.get(i).x, hanbing.get(i).y,
+                            hanbing.get(i).x + hanbing.get(i).wide, hanbing.get(i).y + hanbing.get(i).high)) {
+                            startCarryPlant(hanbing.get(i), PLANT_TYPE_HANBING);
+                            glove.move = false;
+                            util.playBGM("sounds/plant.wav", 1);
+                            return;
+                        }
+                    }
+                    for (int i = 0; i < jianguo.size(); i++) {
+                        if (GameUtil.ifRect(bgX, bgY, jianguo.get(i).x, jianguo.get(i).y,
+                            jianguo.get(i).x + jianguo.get(i).wide, jianguo.get(i).y + jianguo.get(i).high)) {
+                            startCarryPlant(jianguo.get(i), PLANT_TYPE_JIANGUO);
+                            glove.move = false;
+                            util.playBGM("sounds/plant.wav", 1);
+                            return;
+                        }
+                    }
+                } else if (placeCarriedPlant(bgX, bgY)) {
+                    util.playBGM("sounds/plant.wav", 1);
+                    glove.cool = true;
+                    glove.start_time = new Date();
+                    glove.stop_time = glove.start_time;
+                    carriedPlant = null;
+                    carriedPlantType = -1;
+                    glove.resetPosition();
+                    return;
                 }
                 return;
             }
@@ -718,6 +1063,21 @@ public class GameFrame {
         lastSkySunSecond = -1;
         num = 0;
         cameraX = CAMERA_DEFAULT;
+        shove.move = false;
+        shove.x = (int)(630 * TOOLBAR_SCALE) + TOOLBAR_X;
+        shove.y = (int)(10 * TOOLBAR_SCALE) + TOOLBAR_Y_BASE;
+        hammer.move = false;
+        hammer.cool = false;
+        hammer.start_time = new Date();
+        hammer.stop_time = hammer.start_time;
+        hammer.resetPosition();
+        glove.move = false;
+        glove.cool = false;
+        glove.start_time = new Date();
+        glove.stop_time = glove.start_time;
+        glove.resetPosition();
+        carriedPlant = null;
+        carriedPlantType = -1;
         util.playBGM();
     }
 }
