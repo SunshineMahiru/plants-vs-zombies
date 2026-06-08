@@ -13,7 +13,7 @@ import java.awt.Image;
 import plantgame.GameUtil;
 
 public class DLCConfigManager {
-    private static DLCConfigManager instance;
+    private static volatile DLCConfigManager instance;
     
     private Map<String, GameObject> plantTemplates = new HashMap<>();
     private Map<String, GameObject> zombieTemplates = new HashMap<>();
@@ -26,7 +26,11 @@ public class DLCConfigManager {
     
     public static DLCConfigManager getInstance() {
         if (instance == null) {
-            instance = new DLCConfigManager();
+            synchronized (DLCConfigManager.class) {
+                if (instance == null) {
+                    instance = new DLCConfigManager();
+                }
+            }
         }
         return instance;
     }
@@ -81,12 +85,7 @@ public class DLCConfigManager {
                 obj.coolDown = extractInt(objContent, "cool_down", 0);
                 
                 String spritePath = extractString(objContent, "sprite_path");
-                if (spritePath != null) {
-                    try {
-                        // 使用已有的 GameUtil.getImage，如果没有找到可能需要给默认图
-                        // 这里我们使用项目自带的方法
-                    } catch(Exception e) {}
-                }
+                // TODO: load spritePath here if graphics subsystem is updated
                 
                 String attackBehaviorStr = extractString(objContent, "attack_behavior");
                 if (attackBehaviorStr != null) {

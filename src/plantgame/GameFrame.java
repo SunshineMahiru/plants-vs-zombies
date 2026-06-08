@@ -485,7 +485,7 @@ public class GameFrame {
             DLCConfigManager configManager = DLCConfigManager.getInstance();
             if (configManager.getZombieTemplates().size() > 0) {
                 int dlcIndex = (int)(Math.random() * configManager.getZombieTemplates().size());
-                String targetId = (String) configManager.getZombieTemplates().keySet().toArray()[dlcIndex];
+                String targetId = new java.util.ArrayList<>(configManager.getZombieTemplates().keySet()).get(dlcIndex);
                 GameObject zombie = configManager.createZombie(targetId);
                 if (zombie != null) {
                     // 屏幕外生成
@@ -575,7 +575,7 @@ public class GameFrame {
                 }
             }
             // 绘制 DLC 植物
-            for (int i = 0; i < dlcPlants.size(); i++) {
+            for (int i = dlcPlants.size() - 1; i >= 0; i--) {
                 if (dlcPlants.get(i).live) {
                     dlcPlants.get(i).drawSelf(g);
                     if (dlcPlants.get(i).attackBehavior != null) {
@@ -616,7 +616,7 @@ public class GameFrame {
                 }
             }
             // 绘制 DLC 僵尸
-            for (int i = 0; i < dlcZombies.size(); i++) {
+            for (int i = dlcZombies.size() - 1; i >= 0; i--) {
                 if (dlcZombies.get(i).live) {
                     dlcZombies.get(i).drawSelf(g);
                     if (dlcZombies.get(i).moveBehavior != null) {

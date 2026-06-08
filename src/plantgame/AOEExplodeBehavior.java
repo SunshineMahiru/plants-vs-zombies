@@ -1,7 +1,5 @@
 package plantgame;
 
-import plantgame.GameObject;
-
 public class AOEExplodeBehavior implements AttackBehavior {
     @Override
     public void attack(GameObject attacker) {

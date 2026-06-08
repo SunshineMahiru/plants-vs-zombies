@@ -36,7 +36,7 @@ public class EntityFactory {
         
         if (dlcIndex >= 0 && dlcIndex < plantTemplates.size()) {
             // 获取对应的 DLC Plant
-            String targetId = (String) plantTemplates.keySet().toArray()[dlcIndex];
+            String targetId = new ArrayList<>(plantTemplates.keySet()).get(dlcIndex);
             GameObject plant = configManager.createPlant(targetId);
             if (plant != null) {
                 plant.setX(gridX);

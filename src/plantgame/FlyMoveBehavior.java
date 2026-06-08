@@ -1,7 +1,5 @@
 package plantgame;
 
-import plantgame.GameObject;
-
 public class FlyMoveBehavior implements MoveBehavior {
     @Override
     public void move(GameObject mover) {

@@ -1,7 +1,5 @@
 package plantgame;
 
-import plantgame.GameObject;
-
 public class MoveBackwardsBehavior implements MoveBehavior {
     @Override
     public void move(GameObject mover) {
