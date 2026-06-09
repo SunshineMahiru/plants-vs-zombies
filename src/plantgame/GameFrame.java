@@ -103,7 +103,10 @@ public class GameFrame {
     static Image img[];
     static Image suns[];
     static Image flowers[];
+    static Image doubleFlowers[];
     static Image wandous[];
+    static Image doubleWandous[];
+    static Image tripleWandous[];
     static Image hanbings[];
     static Image jianguos[];
     static Image bullets[];
@@ -140,7 +143,7 @@ public class GameFrame {
         }
 
         grade = 1;
-        sun = 50;
+        sun = 500;
         loadtime = 0;
         op = 2;
         lastSkySunSecond = -1;
@@ -151,6 +154,8 @@ public class GameFrame {
         // 加载图片资源
         img = new Image[21];
         wandous = new Image[43];
+        doubleWandous = new Image[0];
+        tripleWandous = new Image[0];
         hanbings = new Image[39];
         jianguos = new Image[115];
         bullets = new Image[2];
@@ -165,9 +170,12 @@ public class GameFrame {
         }
         suns = GameUtil.getGifFrames("Sun/Sun.gif");
         flowers = GameUtil.getGifFrames("flower/SunFlower.gif");
+        doubleFlowers = GameUtil.getGifFrames("fresh/11.gif");
         for (int i = 0; i < wandous.length; i++) {
             wandous[i] = GameUtil.getImage("wandou/wandou (" + (i + 1) + ").png");
         }
+        doubleWandous = GameUtil.getGifFrames("fresh/9.gif");
+        tripleWandous = GameUtil.getGifFrames("fresh/10.gif");
         for (int i = 0; i < hanbings.length; i++) {
             hanbings[i] = GameUtil.getImage("hanbing/hanbing (" + (i + 1) + ").png");
         }
@@ -316,13 +324,15 @@ public class GameFrame {
         g.setFont(oldFont);
     }
 
-    public static void startCarryPlant(GameObject plant, int plantType) {
+    public static void startCarryPlant(GameObject plant, int plantType, int mouseX, int mouseY) {
         carriedPlant = plant;
         carriedPlantType = plantType;
         carriedPlantOriginalX = plant.x;
         carriedPlantOriginalY = plant.y;
         carriedPlantOriginalNum = plant.num;
         glass.get(plant.num).live = false;
+        carriedPlant.x = screenToBgX(mouseX) - carriedPlant.wide / 2;
+        carriedPlant.y = mouseY - carriedPlant.high / 2;
     }
 
     public static void cancelCarriedPlant() {
@@ -345,14 +355,111 @@ public class GameFrame {
                 glass.get(j).x, glass.get(j).y,
                 glass.get(j).x + glass.get(j).wide,
                 glass.get(j).y + glass.get(j).high)) {
-                carriedPlant.x = glass.get(j).x;
-                carriedPlant.y = glass.get(j).y;
+                if (carriedPlant instanceof Wandou) {
+                    ((Wandou) carriedPlant).setGridPosition(glass.get(j).x, glass.get(j).y);
+                } else if (carriedPlant instanceof Flower) {
+                    ((Flower) carriedPlant).setGridPosition(glass.get(j).x, glass.get(j).y);
+                } else {
+                    carriedPlant.x = glass.get(j).x;
+                    carriedPlant.y = glass.get(j).y;
+                }
                 carriedPlant.num = j;
                 glass.get(j).live = true;
                 return true;
             }
         }
         return false;
+    }
+
+    public static boolean isPointInPlantCell(int bgX, int bgY, GameObject plant) {
+        if (plant == null || plant.num < 0 || plant.num >= glass.size()) {
+            return false;
+        }
+        Glass cell = glass.get(plant.num);
+        int left = Math.min(cell.x, plant.x);
+        int top = Math.min(cell.y, plant.y);
+        int right = Math.max(cell.x + cell.wide, plant.x + plant.wide);
+        int bottom = Math.max(cell.y + cell.high, plant.y + plant.high);
+        int padX = 0;
+        int padY = 0;
+        if (plant instanceof Wandou) {
+            padX = 12;
+            padY = 8;
+        }
+        return GameUtil.ifRect(bgX, bgY,
+            left - padX, top - padY,
+            right + padX, bottom + padY);
+    }
+
+    public static boolean mergeCarriedWandou(int bgX, int bgY) {
+        if (carriedPlantType != PLANT_TYPE_WANDOU || !(carriedPlant instanceof Wandou)) {
+            return false;
+        }
+        Wandou source = (Wandou) carriedPlant;
+        for (int i = 0; i < wandou.size(); i++) {
+            Wandou target = wandou.get(i);
+            if (target == source || !target.live || target.isTripleHead()) {
+                continue;
+            }
+            if (GameUtil.ifRect(bgX, bgY, target.x, target.y,
+                target.x + target.wide, target.y + target.high)) {
+                if (source.isSingleHead() && target.isSingleHead()) {
+                    target.upgradeToDoubleHead();
+                } else if ((source.isSingleHead() && target.isDoubleHead())
+                    || (source.isDoubleHead() && target.isSingleHead())) {
+                    target.upgradeToTripleHead();
+                } else {
+                    return false;
+                }
+                source.live = false;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean mergeCarriedFlower(int bgX, int bgY) {
+        if (carriedPlantType != PLANT_TYPE_FLOWER || !(carriedPlant instanceof Flower)) {
+            return false;
+        }
+        Flower source = (Flower) carriedPlant;
+        for (int i = 0; i < flower.size(); i++) {
+            Flower target = flower.get(i);
+            if (target == source || !target.live || target.isDoubleHead()) {
+                continue;
+            }
+            if (GameUtil.ifRect(bgX, bgY, target.x, target.y,
+                target.x + target.wide, target.y + target.high)) {
+                target.upgradeToDoubleHead();
+                source.live = false;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void spawnFlowerSun(Flower plant, int headIndex) {
+        int sunX;
+        int sunY = plant.y - 28;
+        if (plant.isDoubleHead()) {
+            if (headIndex == 0) {
+                sunX = bgToScreenX(plant.x + 8);
+            } else {
+                sunX = bgToScreenX(plant.x + plant.wide - 46);
+            }
+        } else {
+            sunX = bgToScreenX(plant.x + plant.wide / 2 - 25);
+        }
+        sunings.add(new Sun(sunX, sunY, suns));
+    }
+
+    public static void finishGloveUse() {
+        glove.cool = true;
+        glove.start_time = new Date();
+        glove.stop_time = glove.start_time;
+        carriedPlant = null;
+        carriedPlantType = -1;
+        glove.resetPosition();
     }
 
     // ========== 主绘制方法 ==========
@@ -671,7 +778,20 @@ public class GameFrame {
                     flower.get(i).end = new Date();
                     if ((flower.get(i).end.getTime() - flower.get(i).start.getTime()) * 0.001 > 15) {
                         flower.get(i).start = new Date();
-                        sunings.add(new Sun(flower.get(i).x, flower.get(i).y, suns));
+                        if (flower.get(i).isDoubleHead()) {
+                            flower.get(i).queuedSunCount = 2;
+                            flower.get(i).burstStart = flower.get(i).start;
+                            spawnFlowerSun(flower.get(i), 0);
+                            flower.get(i).queuedSunCount = 1;
+                        } else {
+                            spawnFlowerSun(flower.get(i), 0);
+                        }
+                    } else if (flower.get(i).isDoubleHead() && flower.get(i).queuedSunCount > 0) {
+                        long burstElapsed = flower.get(i).end.getTime() - flower.get(i).burstStart.getTime();
+                        if (burstElapsed >= 220) {
+                            spawnFlowerSun(flower.get(i), 1);
+                            flower.get(i).queuedSunCount = 0;
+                        }
                     }
                 }
             }
@@ -895,49 +1015,48 @@ public class GameFrame {
                 int bgY = e.getY();
                 if (carriedPlant == null) {
                     for (int i = 0; i < flower.size(); i++) {
-                        if (GameUtil.ifRect(bgX, bgY, flower.get(i).x, flower.get(i).y,
-                            flower.get(i).x + flower.get(i).wide, flower.get(i).y + flower.get(i).high)) {
-                            startCarryPlant(flower.get(i), PLANT_TYPE_FLOWER);
+                        if (isPointInPlantCell(bgX, bgY, flower.get(i))) {
+                            startCarryPlant(flower.get(i), PLANT_TYPE_FLOWER, e.getX(), e.getY());
                             glove.move = false;
                             util.playBGM("sounds/plant.wav", 1);
                             return;
                         }
                     }
                     for (int i = 0; i < wandou.size(); i++) {
-                        if (GameUtil.ifRect(bgX, bgY, wandou.get(i).x, wandou.get(i).y,
-                            wandou.get(i).x + wandou.get(i).wide, wandou.get(i).y + wandou.get(i).high)) {
-                            startCarryPlant(wandou.get(i), PLANT_TYPE_WANDOU);
+                        if (isPointInPlantCell(bgX, bgY, wandou.get(i))) {
+                            startCarryPlant(wandou.get(i), PLANT_TYPE_WANDOU, e.getX(), e.getY());
                             glove.move = false;
                             util.playBGM("sounds/plant.wav", 1);
                             return;
                         }
                     }
                     for (int i = 0; i < hanbing.size(); i++) {
-                        if (GameUtil.ifRect(bgX, bgY, hanbing.get(i).x, hanbing.get(i).y,
-                            hanbing.get(i).x + hanbing.get(i).wide, hanbing.get(i).y + hanbing.get(i).high)) {
-                            startCarryPlant(hanbing.get(i), PLANT_TYPE_HANBING);
+                        if (isPointInPlantCell(bgX, bgY, hanbing.get(i))) {
+                            startCarryPlant(hanbing.get(i), PLANT_TYPE_HANBING, e.getX(), e.getY());
                             glove.move = false;
                             util.playBGM("sounds/plant.wav", 1);
                             return;
                         }
                     }
                     for (int i = 0; i < jianguo.size(); i++) {
-                        if (GameUtil.ifRect(bgX, bgY, jianguo.get(i).x, jianguo.get(i).y,
-                            jianguo.get(i).x + jianguo.get(i).wide, jianguo.get(i).y + jianguo.get(i).high)) {
-                            startCarryPlant(jianguo.get(i), PLANT_TYPE_JIANGUO);
+                        if (isPointInPlantCell(bgX, bgY, jianguo.get(i))) {
+                            startCarryPlant(jianguo.get(i), PLANT_TYPE_JIANGUO, e.getX(), e.getY());
                             glove.move = false;
                             util.playBGM("sounds/plant.wav", 1);
                             return;
                         }
                     }
+                } else if (mergeCarriedFlower(bgX, bgY)) {
+                    util.playBGM("sounds/plant.wav", 1);
+                    finishGloveUse();
+                    return;
+                } else if (mergeCarriedWandou(bgX, bgY)) {
+                    util.playBGM("sounds/plant.wav", 1);
+                    finishGloveUse();
+                    return;
                 } else if (placeCarriedPlant(bgX, bgY)) {
                     util.playBGM("sounds/plant.wav", 1);
-                    glove.cool = true;
-                    glove.start_time = new Date();
-                    glove.stop_time = glove.start_time;
-                    carriedPlant = null;
-                    carriedPlantType = -1;
-                    glove.resetPosition();
+                    finishGloveUse();
                     return;
                 }
                 return;
@@ -1039,7 +1158,7 @@ public class GameFrame {
     // ========== 重置游戏 ==========
     public static void resetGame() {
         loadtime = 0;
-        sun = 50;
+        sun = 500;
         flower.clear();
         wandou.clear();
         hanbing.clear();
