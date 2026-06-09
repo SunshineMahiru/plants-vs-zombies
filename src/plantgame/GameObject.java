@@ -265,6 +265,7 @@ class Sun extends GameObject {
 	int max;
 	int count;//指示播放到第几张图片
 	int speedx,speedy;//阳光被收集后的移动速度
+	boolean plantSun;
 	boolean move=false;
 	Date start;
 	Date end;
@@ -273,8 +274,9 @@ class Sun extends GameObject {
 	public  Sun(int x,int y,Image imgs[]) {//向日葵生产的阳光
 		this.x=x;this.y=y;//x,y值由向日葵确定
 		this.wide=70;this.high=70;//扩大点击范围
-		this.imgs=imgs;this.max=y+60;
+		this.imgs=imgs;this.max=y+55;
 		this.count=0;this.start=new Date();
+		this.plantSun=true;
 		this.speedx=(int)((this.x-70)/30);this.speedy=(int)((this.y-45)/30);
 	}
 	
@@ -282,7 +284,7 @@ class Sun extends GameObject {
 		this.x=x;this.y=-30;//初始随机一个x值，y值为屏幕上方开始绘制阳光，阳光下落直到最大max值处
 		this.wide=70;this.high=70;//扩大点击范围
 		this.imgs=imgs;this.max=max;
-		this.count=0;this.speedx=(int)((this.x-70)/30);this.speedy=(int)((this.max-45)/30);
+		this.count=0;this.plantSun=false;this.speedx=(int)((this.x-70)/30);this.speedy=(int)((this.max-45)/30);
 	}
 	@Override
 	public void drawSelf(Graphics g) {
@@ -320,7 +322,15 @@ class Sun extends GameObject {
 }
 //花类
 class Flower extends GameObject{
+	static final int NORMAL_W = 60;
+	static final int NORMAL_H = 70;
+	static final int DOUBLE_W = 83;
+	static final int DOUBLE_H = 84;
+	static final int DOUBLE_OFFSET_X = -10;
 	Image imgs[];
+	boolean doubleHead;
+	int queuedSunCount;
+	Date burstStart;
 	int count;
 	int hp;
 	Date start,end;//生产太阳
@@ -329,10 +339,40 @@ class Flower extends GameObject{
 		super(x, y, wide, high);
 		this.start=new Date();
 		this.imgs=GameUtil.getGifFrames("flower/SunFlower.gif");
+		this.doubleHead=false;
+		this.queuedSunCount=0;
+		this.burstStart=new Date();
 		this.count=0;
 		this.num=num;
 		this.hp=100;
+		this.wide=NORMAL_W;
+		this.high=NORMAL_H;
 		
+	}
+
+	public boolean isDoubleHead() {
+		return this.doubleHead;
+	}
+
+	public void setGridPosition(int gridX,int gridY) {
+		this.y=gridY;
+		if(this.doubleHead) {
+			this.x=gridX+DOUBLE_OFFSET_X;
+			this.wide=DOUBLE_W;
+			this.high=DOUBLE_H;
+		}else {
+			this.x=gridX;
+			this.wide=NORMAL_W;
+			this.high=NORMAL_H;
+		}
+	}
+
+	public void upgradeToDoubleHead() {
+		this.doubleHead=true;
+		this.imgs=GameFrame.doubleFlowers;
+		setGridPosition(GameFrame.glass.get(this.num).x, GameFrame.glass.get(this.num).y);
+		this.count=0;
+		this.queuedSunCount=0;
 	}
 
 	@Override
@@ -396,8 +436,33 @@ class PlantAttackUtil {
 }
 
 class Wandou extends GameObject{
+	static final int HEAD_SINGLE = 1;
+	static final int HEAD_DOUBLE = 2;
+	static final int HEAD_TRIPLE = 3;
+	static final int NORMAL_W = 60;
+	static final int NORMAL_H = 70;
+	static final int DOUBLE_HEAD_W = 92;
+	static final int DOUBLE_HEAD_H = 72;
+	static final int TRIPLE_HEAD_W = 73;
+	static final int TRIPLE_HEAD_H = 80;
+	static final int DOUBLE_HEAD_OFFSET_X = -26;
+	static final int TRIPLE_HEAD_OFFSET_X = -12;
+	static final int RIGHT_MOUTH_BULLET_X = 11;
+	static final int RIGHT_MOUTH_BULLET_Y = 2;
+	static final int LEFT_MOUTH_BULLET_X = -58;
+	static final int LEFT_MOUTH_BULLET_Y = 14;
+	static final int TRIPLE_BURST_INTERVAL_MS = 120;
+	static final int TRIPLE_HEAD_TOP_BULLET_X = -10;
+	static final int TRIPLE_HEAD_TOP_BULLET_Y = -8;
+	static final int TRIPLE_HEAD_LEFT_BULLET_X = -34;
+	static final int TRIPLE_HEAD_LEFT_BULLET_Y = 18;
+	static final int TRIPLE_HEAD_RIGHT_BULLET_X = 2;
+	static final int TRIPLE_HEAD_RIGHT_BULLET_Y = 32;
 	Image imgs[];
 	boolean attack;
+	int headLevel;
+	int burstShotsRemaining;
+	Date burstStart;
 	int count;
 	int hp;
 	Date start,end;
@@ -409,6 +474,101 @@ class Wandou extends GameObject{
 		this.count=0;
 		this.num=num;
 		this.hp=100;
+		this.headLevel=HEAD_SINGLE;
+		this.burstShotsRemaining=0;
+		this.burstStart=new Date();
+		this.wide=NORMAL_W;
+		this.high=NORMAL_H;
+	}
+
+	public boolean isSingleHead() {
+		return this.headLevel==HEAD_SINGLE;
+	}
+
+	public boolean isDoubleHead() {
+		return this.headLevel==HEAD_DOUBLE;
+	}
+
+	public boolean isTripleHead() {
+		return this.headLevel==HEAD_TRIPLE;
+	}
+
+	public void setGridPosition(int gridX,int gridY) {
+		this.y=gridY;
+		if(this.headLevel==HEAD_DOUBLE) {
+			this.x=gridX+DOUBLE_HEAD_OFFSET_X;
+			this.wide=DOUBLE_HEAD_W;
+			this.high=DOUBLE_HEAD_H;
+		}else if(this.headLevel==HEAD_TRIPLE) {
+			this.x=gridX+TRIPLE_HEAD_OFFSET_X;
+			this.wide=TRIPLE_HEAD_W;
+			this.high=TRIPLE_HEAD_H;
+		}else {
+			this.x=gridX;
+			this.wide=NORMAL_W;
+			this.high=NORMAL_H;
+		}
+	}
+
+	public void upgradeToDoubleHead() {
+		this.headLevel=HEAD_DOUBLE;
+		this.imgs=GameFrame.doubleWandous;
+		setGridPosition(GameFrame.glass.get(this.num).x, GameFrame.glass.get(this.num).y);
+		this.count=0;
+		this.burstShotsRemaining=0;
+	}
+
+	public void upgradeToTripleHead() {
+		this.headLevel=HEAD_TRIPLE;
+		this.imgs=GameFrame.tripleWandous;
+		setGridPosition(GameFrame.glass.get(this.num).x, GameFrame.glass.get(this.num).y);
+		this.count=0;
+		this.burstShotsRemaining=0;
+	}
+
+	private void fireSinglePea() {
+		GameFrame.bullet.add((new Bullet(this.x,this.y,GameFrame.bullets[0], false,10)));
+	}
+
+	private void fireDoublePea() {
+		GameFrame.bullet.add((new Bullet(this.x + RIGHT_MOUTH_BULLET_X,this.y + RIGHT_MOUTH_BULLET_Y,GameFrame.bullets[0], false,10, 1)));
+		GameFrame.bullet.add((new Bullet(this.x + LEFT_MOUTH_BULLET_X,this.y + LEFT_MOUTH_BULLET_Y,GameFrame.bullets[0], false,10, -1)));
+	}
+
+	private void fireTripleBurstPea(int shotIndex) {
+		if(shotIndex==0) {
+			GameFrame.bullet.add((new Bullet(this.x + TRIPLE_HEAD_TOP_BULLET_X,this.y,GameFrame.bullets[0], false,10, 1, 0, TRIPLE_HEAD_TOP_BULLET_Y)));
+		}else if(shotIndex==1) {
+			GameFrame.bullet.add((new Bullet(this.x + TRIPLE_HEAD_LEFT_BULLET_X,this.y + TRIPLE_HEAD_LEFT_BULLET_Y,GameFrame.bullets[0], false,10, 1)));
+		}else {
+			GameFrame.bullet.add((new Bullet(this.x + TRIPLE_HEAD_RIGHT_BULLET_X,this.y + TRIPLE_HEAD_RIGHT_BULLET_Y,GameFrame.bullets[0], false,10, 1)));
+		}
+	}
+
+	private void updateTripleBurst(boolean hasTarget,boolean canStartBurst) {
+		if(!hasTarget) {
+			this.burstShotsRemaining=0;
+			return;
+		}
+		if(this.burstShotsRemaining==0) {
+			if(!canStartBurst) {
+				return;
+			}
+			this.fireTripleBurstPea(0);
+			this.burstShotsRemaining=2;
+			this.burstStart=new Date();
+			this.start=new Date();
+			return;
+		}
+		Date now=new Date();
+		long elapsed=now.getTime()-this.burstStart.getTime();
+		int firedShots=2-this.burstShotsRemaining;
+		while(this.burstShotsRemaining>0 && elapsed>= (long)TRIPLE_BURST_INTERVAL_MS*(firedShots+1)) {
+			int shotIndex=3-this.burstShotsRemaining;
+			this.fireTripleBurstPea(shotIndex);
+			this.burstShotsRemaining--;
+			firedShots++;
+		}
 	}
 
 	@Override
@@ -420,9 +580,19 @@ class Wandou extends GameObject{
 			this.end=new Date();//用来设置豌豆射手发出子弹的频率-->1.5秒
 			boolean hasTarget = PlantAttackUtil.hasZombieInLane(this.x,this.y);
 			double shootInterval = (this.end.getTime()-this.start.getTime())*0.001;
-			if(hasTarget && (!this.attack || shootInterval>=1.5)) {
+			if(this.isTripleHead()) {
+				boolean canStartBurst = hasTarget && (!this.attack || shootInterval>=1.5);
+				if(canStartBurst && this.burstShotsRemaining==0) {
+					GameFrame.util.playBGM("sounds/biu.wav", 1);
+				}
+				updateTripleBurst(hasTarget, canStartBurst);
+			}else if(hasTarget && (!this.attack || shootInterval>=1.5)) {
 				GameFrame.util.playBGM("sounds/biu.wav", 1);
-				GameFrame.bullet.add((new Bullet(this.x,this.y,GameFrame.bullets[0], false,10)));
+				if(this.isDoubleHead()) {
+					fireDoublePea();
+				}else {
+					fireSinglePea();
+				}
 				this.start=new Date();
 			}//画出豌豆射手
 			this.attack = hasTarget;
@@ -525,20 +695,32 @@ class Jianguo extends GameObject{
 class Bullet extends GameObject{
 	boolean slow;
 	int attack;
+	int direction;
+	int drawOffsetX;
+	int drawOffsetY;
 	public Bullet(int x, int y,Image img,boolean slow,int attack) {
+		this(x, y, img, slow, attack, 1, 0, 0);
+	}
+	public Bullet(int x, int y,Image img,boolean slow,int attack,int direction) {
+		this(x, y, img, slow, attack, direction, 0, 0);
+	}
+	public Bullet(int x, int y,Image img,boolean slow,int attack,int direction,int drawOffsetX,int drawOffsetY) {
 		this.x=68+x;this.y=y;
 		this.wide=26;this.high=26;
 		this.img=img;
 		this.attack=attack;
 		this.slow=slow;
+		this.direction=direction >= 0 ? 1 : -1;
+		this.drawOffsetX=drawOffsetX;
+		this.drawOffsetY=drawOffsetY;
 	}
 	@Override
 	public void drawSelf(Graphics g) {
 		if(this.live) {
-			g.drawImage(img,this.x,this.y,null);
-			this.x+=5;//子弹的速度
+			g.drawImage(img,this.x + this.drawOffsetX,this.y + this.drawOffsetY,null);
+			this.x+=5*this.direction;//子弹的速度
 		}
-		if(this.x>1400) {this.live=false;}
+		if(this.x>1400 || this.x<-50) {this.live=false;}
 	}
 }
 //旗帜僵尸
@@ -1193,6 +1375,30 @@ class BaoZhi extends GameObject {
 		this.wide=45;this.high=70;this.slow_speed=speed/2.0;
 		this.pengtime=1;
 	}
+
+	private boolean isTouchingLivePlant() {
+		for(int i=0;i<GameFrame.flower.size();i++) {
+			if(GameFrame.flower.get(i).hp>0 && this.getRect().intersects(GameFrame.flower.get(i).getRect())) {
+				return true;
+			}
+		}
+		for(int i=0;i<GameFrame.jianguo.size();i++) {
+			if(GameFrame.jianguo.get(i).hp>0 && this.getRect().intersects(GameFrame.jianguo.get(i).getRect())) {
+				return true;
+			}
+		}
+		for(int i=0;i<GameFrame.wandou.size();i++) {
+			if(GameFrame.wandou.get(i).hp>0 && this.getRect().intersects(GameFrame.wandou.get(i).getRect())) {
+				return true;
+			}
+		}
+		for(int i=0;i<GameFrame.hanbing.size();i++) {
+			if(GameFrame.hanbing.get(i).hp>0 && this.getRect().intersects(GameFrame.hanbing.get(i).getRect())) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
 	@Override
@@ -1207,6 +1413,12 @@ class BaoZhi extends GameObject {
 			this.dieing=true;
 		}
 		if(this.live) {
+			if(this.attacking && !this.dieing && !isTouchingLivePlant()) {
+				this.pengtime=1;
+				this.attacking=false;
+				this.moving=true;
+				this.count=this.hp>this.maxHp/2 ? 0 : 94;
+			}
 			if(this.moving) {
 				if(this.hp>this.maxHp/2) {//高血量僵尸行走
 					g.drawImage(imgs[this.count++],(int)this.x,this.y, null);
